@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<pyvcp>
+<!-- 
+Include your PyVCP panel here.
+The contents of this file will not be overwritten when you run stepconf again.
+-->
+
+    <hbox>
+		<checkbutton>
+			<halpin>"record-button"</halpin>
+			<font>("Helvetica",16)</font>
+			<text>"Record"</text>
+		</checkbutton>
+		<led>
+			<halpin>"record-led"</halpin>
+			<on_color>"red"</on_color>
+			<off_color>"grey"</off_color>
+		</led>
+	</hbox>
+</pyvcp>

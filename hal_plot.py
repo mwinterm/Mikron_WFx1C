@@ -120,7 +120,8 @@ for column in record:
 
 
 if(len(y_string)):
-    record.plot(x="Time", y=y_string, figsize=(14, 10))
+    record.plot(x="Time", y=reversed(y_string), figsize=(14, 11))
+    plt.title(inputfile)
     plt.show()
 else:
     print "Nothing to plot!"

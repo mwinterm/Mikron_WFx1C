@@ -120,8 +120,23 @@ for column in record:
 
 
 if(len(y_string)):
-    record.plot(x="Time", y=reversed(y_string), figsize=(14, 11))
+    y_ticks = []
+    for i in range(0, len(y_string)):
+        y_ticks.append(i+0.4)
+    
+
+    fig = plt.figure(figsize=(20, 10))
+    ax = plt.subplot2grid((1, 8), (0, 0), colspan=8)
+    record.plot(x="Time", y=y_string, ax=ax)
+    ax.grid(True, axis='y')
+
+    ax.set_yticks(y_ticks)
+    ax.set_yticklabels(y_string)
+    ax.get_legend().remove()
     plt.title(inputfile)
+    plt.xlabel('Time [s]')
+    plt.subplots_adjust(top=0.95, bottom=0.05, right=0.95, left=0.15)
+
     plt.show()
 else:
     print "Nothing to plot!"

@@ -36,6 +36,8 @@ try:
                 table.append(row)
 
         if len(table):
+            old_row[0] = time.time() - start_time
+            table.append(old_row)
             with open('hal_record' + str(h['rec-number']) + '.csv', 'wb') as csvfile:
                 my_writer = csv.writer(csvfile, delimiter=',',
                                        quotechar='|', quoting=csv.QUOTE_MINIMAL)

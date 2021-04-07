@@ -67,3 +67,9 @@ net _in60 hm2_7i92.0.7i77.0.0.input-28 => hal_recorder.in60
 net _in61 hm2_7i92.0.7i77.0.0.input-29 => hal_recorder.in61
 net _in62 hm2_7i92.0.7i77.0.0.input-30 => hal_recorder.in62
 net _in63 hm2_7i92.0.7i77.0.0.input-31 => hal_recorder.in63
+
+
+
+
+#  ---7i73 keypad---
+net _keypad hm2_7i92.0.7i73.1.0.keycode => matrix_kb.0.keycode

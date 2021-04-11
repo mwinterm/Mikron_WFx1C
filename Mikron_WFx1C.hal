@@ -17,6 +17,10 @@ loadrt matrix_kb config=4x8
 #loadusr -W ./progressive_jog.py
 #loadusr -W ./cycle_jog.py
 loadusr -W ./hal_recorder.py
+#loadusr -W ./glasscale.py
+#net __index_enable glasscale.index_enable hm2_7i92.0.encoder.01.index-enable
+#net _count hm2_7i92.0.encoder.01.count => glasscale.count_in
+#net y-pos-rawcounts => glasscale.raw_count_in
 
 addf hm2_7i92.0.read          servo-thread
 addf motion-command-handler   servo-thread
@@ -114,7 +118,7 @@ setp    hm2_7i92.0.encoder.00.scale  [JOINT_0]ENCODER_SCALE
 net x-pos-fb               <=  hm2_7i92.0.encoder.00.position
 net x-vel-fb               <=  hm2_7i92.0.encoder.00.velocity
 net x-pos-fb               =>  joint.0.motor-pos-fb
-net x-index-enable    joint.0.index-enable  <=>  hm2_7i92.0.encoder.00.index-enable
+#net x-index-enable    joint.0.index-enable  <=>  hm2_7i92.0.encoder.00.index-enable
 net x-pos-rawcounts        <=  hm2_7i92.0.encoder.00.rawcounts
 
 # ---setup home / limit switch signals---
@@ -166,7 +170,7 @@ setp    hm2_7i92.0.encoder.01.scale  [JOINT_1]ENCODER_SCALE
 net y-pos-fb               <=  hm2_7i92.0.encoder.01.position
 net y-vel-fb               <=  hm2_7i92.0.encoder.01.velocity
 net y-pos-fb               =>  joint.1.motor-pos-fb
-net y-index-enable    joint.1.index-enable  <=>  hm2_7i92.0.encoder.01.index-enable
+#net y-index-enable    joint.1.index-enable  <=>  hm2_7i92.0.encoder.01.index-enable
 net y-pos-rawcounts        <=  hm2_7i92.0.encoder.01.rawcounts
 
 # ---setup home / limit switch signals---

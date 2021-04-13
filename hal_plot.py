@@ -8,10 +8,12 @@ import matplotlib.pyplot as plt
 inputfile = ''
 filter = ''
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "hi:f:", ["input=", "filter="])
+    opts, args = getopt.getopt(sys.argv[1:], "hi:f:s:", ["input=", "filter=", "save="])
 except getopt.GetoptError:
-    print 'hal_plot.py -i <inputfile> -f <filter: zero | constant>'
+    print 'hal_plot.py -i <inputfile> -f <filter: zero | constant> -s <file_format>'
     sys.exit(2)
+
+save = ''
 
 for opt, arg in opts:
     if opt == '-h':
@@ -21,9 +23,12 @@ for opt, arg in opts:
         inputfile = arg
     elif opt in ("-f", "--filter"):
         filter = arg
+    elif opt in ("-s", "--save"):
+        save = arg
 
-print 'Input file is: ', inputfile
-print 'Filter is: ', filter
+print('Input file is: ', inputfile)
+print('Filter is: ', filter)
+print('Save Format is: ', save)
 
 
 record = pd.read_csv(inputfile)
@@ -137,6 +142,10 @@ if(len(y_string)):
     plt.xlabel('Time [s]')
     plt.subplots_adjust(top=0.95, bottom=0.05, right=0.95, left=0.15)
 
-    plt.show()
+    if save:
+        name = inputfile.split(".")
+        plt.savefig(name[0] + '.' + save, dpi=150)
+    else:
+        plt.show()
 else:
     print "Nothing to plot!"

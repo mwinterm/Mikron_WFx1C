@@ -7,7 +7,7 @@ loadrt [KINS]KINEMATICS
 loadrt [EMCMOT]EMCMOT servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS
 loadrt hostmot2
 loadrt hm2_eth board_ip="10.10.10.10" config=" num_encoders=6 num_pwmgens=0 num_stepgens=0 sserial_port_0=00000000 sserial_port_1=10000000" 
-setp    hm2_7i92.0.watchdog.timeout_ns 5000000
+setp    hm2_7i92.0.watchdog.timeout_ns 10000000
 loadrt pid names=pid.x,pid.y,pid.z,pid.s
 loadrt matrix_kb config=4x8
 
@@ -30,7 +30,7 @@ addf pid.y.do-pid-calcs       servo-thread
 addf pid.z.do-pid-calcs       servo-thread
 addf pid.s.do-pid-calcs       servo-thread
 addf hm2_7i92.0.write         servo-thread
-addf matrix_kb.0              servo-thread 
+addf matrix_kb.0              servo-thread -2
 setp hm2_7i92.0.dpll.01.timer-us -50
 #setp hm2_7i92.0.stepgen.timer-number 1
 

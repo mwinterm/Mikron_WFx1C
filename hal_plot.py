@@ -32,7 +32,6 @@ print('Input file argument is: ', filearg)
 print('Filter is: ', filter)
 print('Save Format is: ', save)
 
-
 for filename in os.listdir(os.getcwd()):
     if filename.startswith(filearg) and filename.endswith(".csv"):
 
@@ -59,7 +58,7 @@ for filename in os.listdir(os.getcwd()):
             'in18': 'in18_E18_gear_set_block1_2',
             'in19': 'in19_E19_gear_set_block2_1',
             'in20': 'in20_E20_gear_set_block2_2',
-            'in21': 'in21_E21_gear_set_blockk3_1',
+            'in21': 'in21_E21_gear_set_block3_1',
             'in22': 'in22_E22_gear_set_block3_2',
             'in23': 'in23_E23_current_measurement',
             'in24': 'in24_E24_surveillance_feed_drive',
@@ -105,6 +104,32 @@ for filename in os.listdir(os.getcwd()):
         }, inplace=True)
 
         record *= 0.8
+        record["Time"] /= 0.8
+
+        column_list = []
+        if filter.startswith("[") and filter.endswith("]"):
+            filter = filter.replace('[', '')
+            filter = filter.replace(']', '')
+            filter = filter.replace(' ', '')
+            column_list = list(filter.split(','))
+
+        if(filter == 'gearbox'):
+            column_list = [
+                'in17_E17_gear_set_block1_1', 
+                'in18_E18_gear_set_block1_2',    
+                'in19_E19_gear_set_block2_1', 
+                'in20_E20_gear_set_block2_2', 
+                'in21_E21_gear_set_block3_1', 
+                'in22_E22_gear_set_block3_2', 
+                'in23_E23_current_measurement',
+                'in48_A16_block_1_forward',
+                'in49_A17_block_1_backward',
+                'in50_A18_block_2_forward',
+                'in51_A19_block_2_backward',
+                'in52_A20_block_3_forward',
+                'in53_A21_block_3_backward'
+                ]
+
         i = 0
         y_string = []
         for column in record:
@@ -121,7 +146,7 @@ for filename in os.listdir(os.getcwd()):
                     record[column] += (i-1)
                     y_string.append(column)
                     i += 1
-                elif(column in args):
+                elif(column in column_list):
                     record[column] += (i-1)
                     y_string.append(column)
                     i += 1

@@ -6,20 +6,22 @@ import matplotlib.pyplot as plt
 import os
 
 
-inputfile = ''
-filter = ''
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "hi:f:s:", [
-                               "input=", "filter=", "save="])
+    opts, args = getopt.getopt(sys.argv[1:], "hi:f:t:s", [
+                               "input=", "filter=", "save=", "time="])
 except getopt.GetoptError:
-    print 'hal_plot.py -i <inputfile> -f <filter: zero | constant> -s <file_format>'
+    print 'hal_plot.py -i <inputfile> -f <filter: zero | constant> -s <file_format> -t <interval>'
     sys.exit(2)
 
+
+filearg = ''
+filter = ''
 save = ''
+timearg = ''
 
 for opt, arg in opts:
     if opt == '-h':
-        print 'hal_plot.py -i <inputfile> -f <filter: zero | constant> -s <file_format>'
+        print 'hal_plot.py -i <inputfile> -f <filter: zero | constant | gearbox> -s <file_format>'
         sys.exit()
     elif opt in ("-i", "--input"):
         filearg = arg
@@ -27,10 +29,49 @@ for opt, arg in opts:
         filter = arg
     elif opt in ("-s", "--save"):
         save = arg
+    elif opt in ("-t", "--time"):
+        timearg = arg
 
 print('Input file argument is: ', filearg)
 print('Filter is: ', filter)
 print('Save Format is: ', save)
+print('Time interval is: ', timearg)
+
+column_list = []
+time_interval = []
+if filter.startswith("[") and filter.endswith("]"):
+    filter = filter.replace('[', '')
+    filter = filter.replace(']', '')
+    filter = filter.replace(' ', '')
+    column_list = list(filter.split(','))
+
+if timearg.startswith("[") and timearg.endswith("]"):
+    timearg = timearg.replace('[', '')
+    timearg = timearg.replace(']', '')
+    timearg = timearg.replace(' ', '')
+    time_interval = list(timearg.split(','))
+    for i in range(len(time_interval)):
+        time_interval[i] = float(time_interval[i])
+
+if(filter == 'gearbox'):
+    column_list = [
+        'in17_E17_gear_set_block1_1',
+        'in18_E18_gear_set_block1_2',
+        'in19_E19_gear_set_block2_1',
+        'in20_E20_gear_set_block2_2',
+        'in21_E21_gear_set_block3_1',
+        'in22_E22_gear_set_block3_2',
+        'in23_E23_current_measurement',
+        'in48_A16_block_1_forward',
+        'in49_A17_block_1_backward',
+        'in50_A18_block_2_forward',
+        'in51_A19_block_2_backward',
+        'in52_A20_block_3_forward',
+        'in53_A21_block_3_backward'
+    ]
+
+filename = ''
+record = pd.DataFrame()
 
 for filename in os.listdir(os.getcwd()):
     if filename.startswith(filearg) and filename.endswith(".csv"):
@@ -103,32 +144,18 @@ for filename in os.listdir(os.getcwd()):
             'in63': 'in63_A31_emergency_stop',
         }, inplace=True)
 
+        if len(time_interval):
+            record = record[(record['Time'] > time_interval[0]) & (record['Time'] < time_interval[1])]
+            record_tail = record.tail(1).copy()
+            record_tail['Time'] = time_interval[1]
+            record_head = record.head(1).copy()
+            record_head['Time'] = time_interval[0]
+            record = pd.concat([record_head, record, record_tail]).reset_index(drop = True)
+            print(record.head())
+
+
         record *= 0.8
         record["Time"] /= 0.8
-
-        column_list = []
-        if filter.startswith("[") and filter.endswith("]"):
-            filter = filter.replace('[', '')
-            filter = filter.replace(']', '')
-            filter = filter.replace(' ', '')
-            column_list = list(filter.split(','))
-
-        if(filter == 'gearbox'):
-            column_list = [
-                'in17_E17_gear_set_block1_1', 
-                'in18_E18_gear_set_block1_2',    
-                'in19_E19_gear_set_block2_1', 
-                'in20_E20_gear_set_block2_2', 
-                'in21_E21_gear_set_block3_1', 
-                'in22_E22_gear_set_block3_2', 
-                'in23_E23_current_measurement',
-                'in48_A16_block_1_forward',
-                'in49_A17_block_1_backward',
-                'in50_A18_block_2_forward',
-                'in51_A19_block_2_backward',
-                'in52_A20_block_3_forward',
-                'in53_A21_block_3_backward'
-                ]
 
         i = 0
         y_string = []
@@ -153,7 +180,6 @@ for filename in os.listdir(os.getcwd()):
             else:
                 i += 1
 
-
         if(len(y_string)):
             y_ticks = []
             for i in range(0, len(y_string)):
@@ -167,7 +193,7 @@ for filename in os.listdir(os.getcwd()):
             ax.set_yticks(y_ticks)
             ax.set_yticklabels(y_string)
             ax.get_legend().remove()
-            plt.title(inputfile)
+            plt.title(filename)
             plt.xlabel('Time [s]')
             plt.subplots_adjust(top=0.95, bottom=0.05, right=0.95, left=0.15)
 

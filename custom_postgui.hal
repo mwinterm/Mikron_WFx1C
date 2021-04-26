@@ -3,3 +3,4 @@
 
 net _record_button pyvcp.record-button => hal_recorder.record
 net _record_button pyvcp.record-led
+net _E4_central_lubrication => pyvcp.lub-led

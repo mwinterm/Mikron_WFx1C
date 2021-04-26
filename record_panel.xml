@@ -4,7 +4,7 @@
 Include your PyVCP panel here.
 The contents of this file will not be overwritten when you run stepconf again.
 -->
-
+	<vbox>
     <hbox>
 		<checkbutton>
 			<halpin>"record-button"</halpin>
@@ -16,5 +16,17 @@ The contents of this file will not be overwritten when you run stepconf again.
 			<on_color>"red"</on_color>
 			<off_color>"grey"</off_color>
 		</led>
+		
 	</hbox>
+	<hbox>
+		<label>
+			<text>"Lubrication"</text>
+		</label>
+		<led>
+			<halpin>"lub-led"</halpin>
+			<on_color>"yellow"</on_color>
+			<off_color>"grey"</off_color>
+		</led>
+	</hbox>
+	</vbox>
 </pyvcp>

@@ -7,9 +7,11 @@ loadrt [KINS]KINEMATICS
 loadrt [EMCMOT]EMCMOT servo_period_nsec=[EMCMOT]SERVO_PERIOD num_joints=[KINS]JOINTS
 loadrt hostmot2
 loadrt hm2_eth board_ip="10.10.10.10" config=" num_encoders=6 num_pwmgens=0 num_stepgens=0 sserial_port_0=00000000 sserial_port_1=10000000" 
-setp    hm2_7i92.0.watchdog.timeout_ns 10000000
+setp   hm2_7i92.0.watchdog.timeout_ns 10000000
 loadrt pid names=pid.x,pid.y,pid.z,pid.s
 loadrt matrix_kb config=4x8
+loadrt abs count=3
+loadrt integ count=3
 
 #load user components
 #loadusr -W ./blink.py
@@ -17,6 +19,8 @@ loadrt matrix_kb config=4x8
 #loadusr -W ./progressive_jog.py
 #loadusr -W ./cycle_jog.py
 loadusr -W ./hal_recorder.py
+loadusr -W ./drives.py
+loadusr -W ./lubrication.py
 #loadusr -W ./glasscale.py
 #net __index_enable glasscale.index_enable hm2_7i92.0.encoder.01.index-enable
 #net _count hm2_7i92.0.encoder.01.count => glasscale.count_in
@@ -31,6 +35,14 @@ addf pid.z.do-pid-calcs       servo-thread
 addf pid.s.do-pid-calcs       servo-thread
 addf hm2_7i92.0.write         servo-thread
 addf matrix_kb.0              servo-thread -2
+addf abs.0                    servo-thread
+addf abs.1                    servo-thread
+addf abs.2                    servo-thread
+addf integ.0                  servo-thread
+addf integ.1                  servo-thread
+addf integ.2                  servo-thread
+
+
 setp hm2_7i92.0.dpll.01.timer-us -50
 #setp hm2_7i92.0.stepgen.timer-number 1
 
@@ -332,3 +344,41 @@ net tool-number             iocontrol.0.tool-prep-number  =>  hal_manualtoolchan
 net tool-prepare-loopback   iocontrol.0.tool-prepare      =>  iocontrol.0.tool-prepared
 
 
+#  ---lubrication---
+setp lubrication.lub_cycle_time         [LUBRICATION]LUB_CYCLE_TIME
+setp lubrication.lub_interval_time      [LUBRICATION]LUB_INTERVAL_TIME
+setp lubrication.num_cycles             [LUBRICATION]NUM_CYCLES
+setp lubrication.start_cycles_pause     [LUBRICATION]START_CYCLES_PAUSE
+setp lubrication.lub_warning_interval   [LUBRICATION]LUB_WARNING_INTERVAL
+
+setp lubrication.joint0_lub_dist        [LUBRICATION]JOINT0_LUB_DIST
+setp lubrication.joint1_lub_dist        [LUBRICATION]JOINT1_LUB_DIST
+setp lubrication.joint2_lub_dist        [LUBRICATION]JOINT2_LUB_DIST
+
+setp lubrication.joint0_lub_hubs        [LUBRICATION]JOINT0_LUB_HUBS
+setp lubrication.joint1_lub_hubs        [LUBRICATION]JOINT1_LUB_HUBS
+setp lubrication.joint2_lub_hubs        [LUBRICATION]JOINT2_LUB_HUBS
+
+net _joint_vel_0 joint.0.vel-cmd => abs.0.in
+net _integrator_0 abs.0.out => integ.0.in
+net _integ_0_out integ.0.out => lubrication.joint0_integ
+net _integ_reset => integ.0.reset
+
+net _joint_vel_1 joint.1.vel-cmd => abs.1.in
+net _integrator_1 abs.1.out => integ.1.in
+net _integ_1_out integ.1.out => lubrication.joint1_integ
+net _integ_reset => integ.1.reset
+
+net _joint_vel_2 joint.2.vel-cmd => abs.2.in
+net _integrator_2 abs.2.out => integ.2.in
+net _integ_2_out integ.2.out => lubrication.joint2_integ
+net _integ_reset => integ.2.reset
+
+net _joint_vel_0 => lubrication.joint0_vel
+net _joint_vel_1 => lubrication.joint1_vel
+net _joint_vel_2 => lubrication.joint2_vel
+
+net _integ_reset <= lubrication.integ_reset
+
+net _A1_central_lubrication <= lubrication.lub_pump
+net _E4_central_lubrication => lubrication.lub_pressure

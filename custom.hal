@@ -141,3 +141,55 @@ net _A31_emergency_stop hm2_7i92.0.7i77.0.0.output-15 => hal_recorder.in63
 #net _keypad hm2_7i92.0.7i73.1.0.keycode => matrix_kb.0.keycode
 net keys matrix_kb.0.keycode
 net keys hm2_7i92.0.7i73.1.0.keycode
+
+#e-stop
+net _estop hm2_7i92.0.7i73.1.0.input-04
+
+#run / pause buttons
+net _pause_button <= hm2_7i92.0.7i73.1.0.input-03
+net _pause_led => hm2_7i92.0.7i73.1.0.output-03
+net _run_button <= hm2_7i92.0.7i73.1.0.input-02
+net _run_led => hm2_7i92.0.7i73.1.0.output-02
+
+#rapid buttons
+net _x_plus_button <= matrix_kb.0.key.r1c1
+net _x_plus_led => hm2_7i92.0.7i73.1.0.output-05 
+net _x_minus_button <= matrix_kb.0.key.r1c0
+net _x_minus_led => hm2_7i92.0.7i73.1.0.output-04 
+
+net _y_plus_button <= matrix_kb.0.key.r1c2
+net _y_plys_led => hm2_7i92.0.7i73.1.0.output-06
+net _y_minus_button <= matrix_kb.0.key.r1c3
+net _y_minus_led => hm2_7i92.0.7i73.1.0.output-07
+
+net _z_plus_button <= matrix_kb.0.key.r1c5
+net _z_plus_led => hm2_7i92.0.7i73.1.0.output-09 
+net _z_minus_button <= matrix_kb.0.key.r1c4
+net _z_minus_led => hm2_7i92.0.7i73.1.0.output-08 
+
+#tool-change / drives
+net _toolchange_button <= matrix_kb.0.key.r2c0
+net _toolchange_led => hm2_7i92.0.7i73.1.0.output-10
+
+#spindle
+net _spindle_button <= matrix_kb.0.key.r2c1
+net _spindle_led => hm2_7i92.0.7i73.1.0.output-11
+
+#coolant
+net _coolant_button <= matrix_kb.0.key.r2c2
+net _coolant_led => hm2_7i92.0.7i73.1.0.output-12
+
+#mode-knob (manual (1, 0), mdi(0, 0), program(0, 1))
+net _mode_knob_1 <= matrix_kb.0.key.r2c4
+net _mode_knob_2 <= matrix_kb.0.key.r2c3
+
+#run-know (auto(1, 0), step(0, 0), job(0, 1))
+net _run_knob_1 <= matrix_kb.0.key.r0c3
+net _run_knob_2 <= matrix_kb.0.key.r0c2
+
+#feed override (0-3.3)
+net _speed_override <= hm2_7i92.0.7i73.1.0.analogin0
+net _feed_override <= hm2_7i92.0.7i73.1.0.analogin1
+
+#jog-wheel count
+net _jog_count <= hm2_7i92.0.7i73.1.0.enc0.count

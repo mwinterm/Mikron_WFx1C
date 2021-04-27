@@ -1,40 +1,6 @@
-# Include your custom HAL commands here
-# This file will not be overwritten when you run PNCconf again
+# Pin mapping from the mesacards
 
-# net _E0_emergency_stop_button hm2_7i92.0.7i70.1.2.input-00 => hal_recorder.in0
-# net _E1_emergency_stop_end_switch hm2_7i92.0.7i70.1.2.input-01 => hal_recorder.in1
-# net _E2_ZENTR_MIKROSK hm2_7i92.0.7i70.1.2.input-02 => hal_recorder.in2
-# net _E3_emergency_stop_feedback hm2_7i92.0.7i70.1.2.input-03 => hal_recorder.in3
-# net _E4_central_lubrication hm2_7i92.0.7i70.1.2.input-04 => hal_recorder.in4
-# net _E5_surveillance_coolant hm2_7i92.0.7i70.1.2.input-05 => hal_recorder.in5
-# net _E6_door_lock hm2_7i92.0.7i70.1.2.input-06 => hal_recorder.in6
-# net _E7_door_surveillance hm2_7i92.0.7i70.1.2.input-07 => hal_recorder.in7
-# net _E8_prepare hm2_7i92.0.7i70.1.2.input-08 => hal_recorder.in8
-# net _E9_feed_contactor hm2_7i92.0.7i70.1.2.input-09 => hal_recorder.in9
-# net _E10_emergency_stop_contactor hm2_7i92.0.7i70.1.2.input-10 => hal_recorder.in10
-# net _E11_spindle_contactor hm2_7i92.0.7i70.1.2.input-11 => hal_recorder.in11
-# net _E12_free hm2_7i92.0.7i70.1.2.input-12 => hal_recorder.in12
-# net _E13_free hm2_7i92.0.7i70.1.2.input-13 => hal_recorder.in13
-# net _E14_free hm2_7i92.0.7i70.1.2.input-14 => hal_recorder.in14
-# net _E15_temp_surveillance hm2_7i92.0.7i70.1.2.input-15 => hal_recorder.in15
-# net _E16_rpm_surveillance hm2_7i92.0.7i70.1.2.input-16 => hal_recorder.in16
-# net _E17_gear_set_block1_1 hm2_7i92.0.7i70.1.2.input-17 => hal_recorder.in17
-# net _E18_gear_set_block1_2 hm2_7i92.0.7i70.1.2.input-18 => hal_recorder.in18
-# net _E19_gear_set_block2_1 hm2_7i92.0.7i70.1.2.input-24 => hal_recorder.in19
-# net _E20_gear_set_block2_2 hm2_7i92.0.7i70.1.2.input-25 => hal_recorder.in20
-# net _E21_gear_set_block3_1 hm2_7i92.0.7i70.1.2.input-26 => hal_recorder.in21
-# net _E22_gear_set_block3_2 hm2_7i92.0.7i70.1.2.input-27 => hal_recorder.in22
-# net _E23_current_measurement hm2_7i92.0.7i70.1.2.input-28 => hal_recorder.in23
-# net _E24_surveillance_feed_drive hm2_7i92.0.7i70.1.2.input-29 => hal_recorder.in24
-# net _E25_feed_drive_ready hm2_7i92.0.7i70.1.2.input-30 => hal_recorder.in25
-# net _E26_free hm2_7i92.0.7i70.1.2.input-31 => hal_recorder.in26
-# net _E27_refpoint_axis_1 hm2_7i92.0.7i70.1.2.input-19 => hal_recorder.in27
-# net _E28_refpoint_axis_2 hm2_7i92.0.7i70.1.2.input-20 => hal_recorder.in28
-# net _E29_refpoint_axis_3 hm2_7i92.0.7i70.1.2.input-21 => hal_recorder.in29
-# net _E30_refpoint_axis_4 hm2_7i92.0.7i70.1.2.input-22 => hal_recorder.in30
-# net _E31_door_surveillance hm2_7i92.0.7i70.1.2.input-23 => hal_recorder.in31
-
-
+# Heidenhain Inputs and recording of inputs
 net _E0_emergency_stop_button hm2_7i92.0.7i70.1.2.input-00 => hal_recorder.in0
 net _E1_emergency_stop_end_switch hm2_7i92.0.7i70.1.2.input-01 => hal_recorder.in1
 net _E2_ZENTR_MIKROSK hm2_7i92.0.7i70.1.2.input-02 => hal_recorder.in2
@@ -68,42 +34,7 @@ net _E29_refpoint_axis_3 hm2_7i92.0.7i70.1.2.input-21 => hal_recorder.in29
 net _E30_refpoint_axis_4 hm2_7i92.0.7i70.1.2.input-22 => hal_recorder.in30
 net _E31_door_surveillance hm2_7i92.0.7i70.1.2.input-23 => hal_recorder.in31
 
-
-
-# net _A0_coolant_pump hm2_7i92.0.7i77.0.0.input-00 => hal_recorder.in32
-# net _A1_central_lubrication hm2_7i92.0.7i77.0.0.input-01 => hal_recorder.in33
-# net _A2_soft_spindle_start hm2_7i92.0.7i77.0.0.input-02 => hal_recorder.in34
-# net _A3_spindle_motor hm2_7i92.0.7i77.0.0.input-03 => hal_recorder.in35
-# net _A4_M211_stage_1 hm2_7i92.0.7i77.0.0.input-04 => hal_recorder.in36
-# net _A5_M211_stage_2 hm2_7i92.0.7i77.0.0.input-05 => hal_recorder.in37
-# net _A6_M211_ccw hm2_7i92.0.7i77.0.0.input-06 => hal_recorder.in38
-# net _A7_M211_cw hm2_7i92.0.7i77.0.0.input-07 => hal_recorder.in39
-# net _A8_spindle_break hm2_7i92.0.7i77.0.0.input-08 => hal_recorder.in40
-# net _A9_prepare_toolchange hm2_7i92.0.7i77.0.0.input-09 => hal_recorder.in41
-# net _A10_clamp_3rd_axis hm2_7i92.0.7i77.0.0.input-10 => hal_recorder.in42
-# net _A11_clamp_4th_axis hm2_7i92.0.7i77.0.0.input-11 => hal_recorder.in43
-# net _A12_feed_driver hm2_7i92.0.7i77.0.0.input-12 => hal_recorder.in44
-# net _A13_door_lock hm2_7i92.0.7i77.0.0.input-13 => hal_recorder.in45
-# net _A14_confirm hm2_7i92.0.7i77.0.0.input-14 => hal_recorder.in46
-# net _A15_free hm2_7i92.0.7i77.0.0.input-15 => hal_recorder.in47
-# net _A16_block_1_forward hm2_7i92.0.7i77.0.0.input-16 => hal_recorder.in48
-# net _A17_block_1_backward hm2_7i92.0.7i77.0.0.input-17 => hal_recorder.in49
-# net _A18_block_2_forward hm2_7i92.0.7i77.0.0.input-18 => hal_recorder.in50
-# net _A19_block_2_backward hm2_7i92.0.7i77.0.0.input-19 => hal_recorder.in51
-# net _A20_block_3_forward hm2_7i92.0.7i77.0.0.input-20 => hal_recorder.in52
-# net _A21_block_3_backward hm2_7i92.0.7i77.0.0.input-21 => hal_recorder.in53
-# net _A22_axis_1_approve hm2_7i92.0.7i77.0.0.input-22 => hal_recorder.in54
-# net _A23_axis_2_approve hm2_7i92.0.7i77.0.0.input-23 => hal_recorder.in55
-# net _A24_axis_3_approve hm2_7i92.0.7i77.0.0.input-24 => hal_recorder.in56
-# net _A25_axis_4_approve hm2_7i92.0.7i77.0.0.input-25 => hal_recorder.in57
-# net _A26_free hm2_7i92.0.7i77.0.0.input-26 => hal_recorder.in58
-# net _A27_free hm2_7i92.0.7i77.0.0.input-27 => hal_recorder.in59
-# net _A28_free hm2_7i92.0.7i77.0.0.input-28 => hal_recorder.in60
-# net _A29_free hm2_7i92.0.7i77.0.0.input-29 => hal_recorder.in61
-# net _A30_free hm2_7i92.0.7i77.0.0.input-30 => hal_recorder.in62
-# net _A31_emergency_stop hm2_7i92.0.7i77.0.0.input-31 => hal_recorder.in63
-
-
+#Heidenhain Outputs
 net _A0_coolant_pump hm2_7i92.0.7i84.1.4.output-00 => hal_recorder.in32
 net _A1_central_lubrication hm2_7i92.0.7i84.1.4.output-01 => hal_recorder.in33
 net _A2_soft_spindle_start hm2_7i92.0.7i84.1.4.output-02 => hal_recorder.in34
@@ -137,13 +68,60 @@ net _A29_free hm2_7i92.0.7i77.0.0.output-13 => hal_recorder.in61
 net _A30_free hm2_7i92.0.7i77.0.0.output-14 => hal_recorder.in62
 net _A31_emergency_stop hm2_7i92.0.7i77.0.0.output-15 => hal_recorder.in63
 
+#recording of Heidenhain outputs
+# net _in_A0_coolant_pump hm2_7i92.0.7i77.0.0.input-00 => hal_recorder.in32
+# net _in_A1_central_lubrication hm2_7i92.0.7i77.0.0.input-01 => hal_recorder.in33
+# net _in_A2_soft_spindle_start hm2_7i92.0.7i77.0.0.input-02 => hal_recorder.in34
+# net _in_A3_spindle_motor hm2_7i92.0.7i77.0.0.input-03 => hal_recorder.in35
+# net _in_A4_M211_stage_1 hm2_7i92.0.7i77.0.0.input-04 => hal_recorder.in36
+# net _in_A5_M211_stage_2 hm2_7i92.0.7i77.0.0.input-05 => hal_recorder.in37
+# net _in_A6_M211_ccw hm2_7i92.0.7i77.0.0.input-06 => hal_recorder.in38
+# net _in_A7_M211_cw hm2_7i92.0.7i77.0.0.input-07 => hal_recorder.in39
+# net _in_A8_spindle_break hm2_7i92.0.7i77.0.0.input-08 => hal_recorder.in40
+# net _in_A9_prepare_toolchange hm2_7i92.0.7i77.0.0.input-09 => hal_recorder.in41
+# net _in_A10_clamp_3rd_axis hm2_7i92.0.7i77.0.0.input-10 => hal_recorder.in42
+# net _in_A11_clamp_4th_axis hm2_7i92.0.7i77.0.0.input-11 => hal_recorder.in43
+# net _in_A12_feed_driver hm2_7i92.0.7i77.0.0.input-12 => hal_recorder.in44
+# net _in_A13_door_lock hm2_7i92.0.7i77.0.0.input-13 => hal_recorder.in45
+# net _in_A14_confirm hm2_7i92.0.7i77.0.0.input-14 => hal_recorder.in46
+# net _in_A15_free hm2_7i92.0.7i77.0.0.input-15 => hal_recorder.in47
+# net _in_A16_block_1_forward hm2_7i92.0.7i77.0.0.input-16 => hal_recorder.in48
+# net _in_A17_block_1_backward hm2_7i92.0.7i77.0.0.input-17 => hal_recorder.in49
+# net _in_A18_block_2_forward hm2_7i92.0.7i77.0.0.input-18 => hal_recorder.in50
+# net _in_A19_block_2_backward hm2_7i92.0.7i77.0.0.input-19 => hal_recorder.in51
+# net _in_A20_block_3_forward hm2_7i92.0.7i77.0.0.input-20 => hal_recorder.in52
+# net _in_A21_block_3_backward hm2_7i92.0.7i77.0.0.input-21 => hal_recorder.in53
+# net _in_A22_axis_1_approve hm2_7i92.0.7i77.0.0.input-22 => hal_recorder.in54
+# net _in_A23_axis_2_approve hm2_7i92.0.7i77.0.0.input-23 => hal_recorder.in55
+# net _in_A24_axis_3_approve hm2_7i92.0.7i77.0.0.input-24 => hal_recorder.in56
+# net _in_A25_axis_4_approve hm2_7i92.0.7i77.0.0.input-25 => hal_recorder.in57
+# net _in_A26_free hm2_7i92.0.7i77.0.0.input-26 => hal_recorder.in58
+# net _in_A27_free hm2_7i92.0.7i77.0.0.input-27 => hal_recorder.in59
+# net _in_A28_free hm2_7i92.0.7i77.0.0.input-28 => hal_recorder.in60
+# net _in_A29_free hm2_7i92.0.7i77.0.0.input-29 => hal_recorder.in61
+# net _in_A30_free hm2_7i92.0.7i77.0.0.input-30 => hal_recorder.in62
+# net _in_A31_emergency_stop hm2_7i92.0.7i77.0.0.input-31 => hal_recorder.in63
+
+
 #  ---7i73 keypad---
 #net _keypad hm2_7i92.0.7i73.1.0.keycode => matrix_kb.0.keycode
 net keys matrix_kb.0.keycode
 net keys hm2_7i92.0.7i73.1.0.keycode
 
 #e-stop
-net _estop hm2_7i92.0.7i73.1.0.input-04
+# net _estop hm2_7i92.0.7i73.1.0.input-04
+setp oneshot.0.rising true
+setp oneshot.0.falling false
+setp oneshot.0.width 0.1
+setp oneshot.1.rising false
+setp oneshot.1.falling true
+setp oneshot.1.width 0.1
+
+net _estop_button <= hm2_7i92.0.7i73.1.0.input-04
+net _estop_button => oneshot.0.in
+net _estop_button => oneshot.1.in
+net _estop_trigger <= oneshot.0.out
+net _estop_release <= oneshot.1.out
 
 #run / pause buttons
 net _pause_button <= hm2_7i92.0.7i73.1.0.input-03

@@ -111,11 +111,11 @@ net x-output        <=  pid.x.output
 
 # ---PWM Generator signals/setup---
 
-setp   hm2_7i92.0.7i77.0.1.analogout0-scalemax  [JOINT_0]OUTPUT_SCALE
-setp   hm2_7i92.0.7i77.0.1.analogout0-minlim    [JOINT_0]OUTPUT_MIN_LIMIT
-setp   hm2_7i92.0.7i77.0.1.analogout0-maxlim    [JOINT_0]OUTPUT_MAX_LIMIT
+setp   hm2_7i92.0.7i77.0.1.analogout1-scalemax  [JOINT_0]OUTPUT_SCALE
+setp   hm2_7i92.0.7i77.0.1.analogout1-minlim    [JOINT_0]OUTPUT_MIN_LIMIT
+setp   hm2_7i92.0.7i77.0.1.analogout1-maxlim    [JOINT_0]OUTPUT_MAX_LIMIT
 
-net x-output     => hm2_7i92.0.7i77.0.1.analogout0
+net x-output     => hm2_7i92.0.7i77.0.1.analogout1
 net x-pos-cmd    <= joint.0.motor-pos-cmd
 net x-enable     <= joint.0.amp-enable-out
 # enable _all_ sserial pwmgens
@@ -165,11 +165,11 @@ net y-output        <=  pid.y.output
 
 # ---PWM Generator signals/setup---
 
-setp   hm2_7i92.0.7i77.0.1.analogout1-scalemax  [JOINT_1]OUTPUT_SCALE
-setp   hm2_7i92.0.7i77.0.1.analogout1-minlim    [JOINT_1]OUTPUT_MIN_LIMIT
-setp   hm2_7i92.0.7i77.0.1.analogout1-maxlim    [JOINT_1]OUTPUT_MAX_LIMIT
+setp   hm2_7i92.0.7i77.0.1.analogout2-scalemax  [JOINT_1]OUTPUT_SCALE
+setp   hm2_7i92.0.7i77.0.1.analogout2-minlim    [JOINT_1]OUTPUT_MIN_LIMIT
+setp   hm2_7i92.0.7i77.0.1.analogout2-maxlim    [JOINT_1]OUTPUT_MAX_LIMIT
 
-net y-output     => hm2_7i92.0.7i77.0.1.analogout1
+net y-output     => hm2_7i92.0.7i77.0.1.analogout2
 net y-pos-cmd    <= joint.1.motor-pos-cmd
 net y-enable     <= joint.1.amp-enable-out
 
@@ -217,11 +217,11 @@ net z-output        <=  pid.z.output
 
 # ---PWM Generator signals/setup---
 
-setp   hm2_7i92.0.7i77.0.1.analogout2-scalemax  [JOINT_2]OUTPUT_SCALE
-setp   hm2_7i92.0.7i77.0.1.analogout2-minlim    [JOINT_2]OUTPUT_MIN_LIMIT
-setp   hm2_7i92.0.7i77.0.1.analogout2-maxlim    [JOINT_2]OUTPUT_MAX_LIMIT
+setp   hm2_7i92.0.7i77.0.1.analogout3-scalemax  [JOINT_2]OUTPUT_SCALE
+setp   hm2_7i92.0.7i77.0.1.analogout3-minlim    [JOINT_2]OUTPUT_MIN_LIMIT
+setp   hm2_7i92.0.7i77.0.1.analogout3-maxlim    [JOINT_2]OUTPUT_MAX_LIMIT
 
-net z-output     => hm2_7i92.0.7i77.0.1.analogout2
+net z-output     => hm2_7i92.0.7i77.0.1.analogout3
 net z-pos-cmd    <= joint.2.motor-pos-cmd
 net z-enable     <= joint.2.amp-enable-out
 

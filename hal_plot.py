@@ -120,7 +120,7 @@ for filename in os.listdir(os.getcwd()):
             'in39': 'in39_A7_M211_cw',
             'in40': 'in40_A8_spindle_break',
             'in41': 'in41_A9_prepare_toolchange',
-            'in42': 'in42_A10_clamp_3rd_axis',
+            'in42': 'in42_A10_unclamp_3rd_axis',
             'in43': 'in43_A11_clamp_4th_axis',
             'in44': 'in44_A12_feed_driver',
             'in45': 'in45_A13_door_lock',

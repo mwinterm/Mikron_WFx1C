@@ -161,7 +161,7 @@ net y-index-enable  <=> pid.y.index-enable
 net y-enable        =>  pid.y.enable
 net y-pos-cmd       =>  pid.y.command
 net y-pos-fb        =>  pid.y.feedback
-#net y-output        <=  pid.y.output
+net y-output        <=  pid.y.output
 
 # ---PWM Generator signals/setup---
 
@@ -410,5 +410,5 @@ net _tc_button_out drives.toolchange_button_out => hal_manualtoolchange.change_b
 net _A9_prepare_toolchange <= drives.prepare_toolchange 
 #net _A10_unclamp_3rd_axis <= drives.unclamp_3rd_axis
 net _A22_axis_1_approve <= drives.axis_1_approve
-net _A23_axis_2_approve <= drives.axis_2_approve
+#net _A23_axis_2_approve <= drives.axis_2_approve
 #net _A24_axis_3_approve <= drives.axis_3_approve

@@ -129,11 +129,14 @@ setp    hm2_7i92.0.encoder.01.index-invert 0
 setp    hm2_7i92.0.encoder.01.index-mask 0
 setp    hm2_7i92.0.encoder.01.index-mask-invert 0
 setp    hm2_7i92.0.encoder.01.scale  [JOINT_0]ENCODER_SCALE
+setp    hm2_7i92.0.encoder.01.reset-on-index 0
 
 net x-pos-fb               <=  hm2_7i92.0.encoder.01.position
 net x-vel-fb               <=  hm2_7i92.0.encoder.01.velocity
 net x-pos-fb               =>  joint.0.motor-pos-fb
-#net x-index-enable    joint.0.index-enable  <=>  hm2_7i92.0.encoder.00.index-enable
+net x-index-enable         <=  joint.0.index-enable  
+net x-index-enable         =>  hm2_7i92.0.encoder.01.index-enable
+net x-pos-rawcounts        =>  joint.0.motor-pos-raw-fb 
 net x-pos-rawcounts        <=  hm2_7i92.0.encoder.01.rawcounts
 
 # ---setup home / limit switch signals---
@@ -181,11 +184,14 @@ setp    hm2_7i92.0.encoder.02.index-invert 0
 setp    hm2_7i92.0.encoder.02.index-mask 0
 setp    hm2_7i92.0.encoder.02.index-mask-invert 0
 setp    hm2_7i92.0.encoder.02.scale  [JOINT_1]ENCODER_SCALE
+setp    hm2_7i92.0.encoder.02.reset-on-index 0
 
 net y-pos-fb               <=  hm2_7i92.0.encoder.02.position
 net y-vel-fb               <=  hm2_7i92.0.encoder.02.velocity
 net y-pos-fb               =>  joint.1.motor-pos-fb
-#net y-index-enable    joint.1.index-enable  <=>  hm2_7i92.0.encoder.02.index-enable
+net y-index-enable         <=  joint.1.index-enable  
+net y-index_enable         =>  hm2_7i92.0.encoder.02.index-enable
+net y-pos-rawcounts        =>  joint.1.motor-pos-raw-fb
 net y-pos-rawcounts        <=  hm2_7i92.0.encoder.02.rawcounts
 
 # ---setup home / limit switch signals---
@@ -233,11 +239,14 @@ setp    hm2_7i92.0.encoder.03.index-invert 0
 setp    hm2_7i92.0.encoder.03.index-mask 0
 setp    hm2_7i92.0.encoder.03.index-mask-invert 0
 setp    hm2_7i92.0.encoder.03.scale  [JOINT_2]ENCODER_SCALE
+setp    hm2_7i92.0.encoder.03.reset-on-index 0
 
 net z-pos-fb               <=  hm2_7i92.0.encoder.03.position
 net z-vel-fb               <=  hm2_7i92.0.encoder.03.velocity
 net z-pos-fb               =>  joint.2.motor-pos-fb
-net z-index-enable    joint.2.index-enable  <=>  hm2_7i92.0.encoder.03.index-enable
+net z-index-enable         <=  joint.2.index-enable
+net z-index-enable         =>  hm2_7i92.0.encoder.03.index-enable
+net z-pos-rawcounts        =>  joint.2.motor-pos-raw-fb
 net z-pos-rawcounts        <=  hm2_7i92.0.encoder.03.rawcounts
 
 # ---setup home / limit switch signals---

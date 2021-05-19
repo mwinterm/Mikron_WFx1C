@@ -1,6 +1,14 @@
 #!/usr/bin/env python
 import hal
 import time
+import linuxcnc
+
+
+c = linuxcnc.command()
+
+# c.error_msg('Error')
+# c.text_msg('Text')
+# c.display_msg('Display')
 
 h = hal.component("lubrication")
 h.newparam("lub_command", hal.HAL_BIT, hal.HAL_RW)
@@ -45,7 +53,6 @@ joint2_vel_old = 1.0
 joint0_hubs = 0
 joint1_hubs = 0
 joint2_hubs = 0
-
 
 try:
     while 1:
@@ -109,9 +116,16 @@ try:
                     paused_timer = time.time()
                 elif time.time() - paused_timer > h.lub_warning_interval:
                     print("Warning: Lubrication is paused")
+                    c.text_msg("Warning: Lubrication is paused")
                     paused_timer = time.time()
             elif h.lub_command: 
                 h.lub_pump = True
+                pressure_delay_time = time.time()
+
+            #check if it takes too long to build pressure
+            if h.lub_command and (not h.lub_pressure) and (time.time() - pressure_delay_time > 3.0):
+                c.error_msg("Lubrication not working, no pressure building up.")
+                pressure_delay_time = time.time() + 30.0
 
             #start the timer for lubricatoin based on pressure
             if h.lub_command and h.lub_pressure and pressure_time < 0.0:

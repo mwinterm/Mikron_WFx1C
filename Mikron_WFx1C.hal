@@ -22,6 +22,7 @@ loadrt oneshot count=2
 loadusr -W ./hal_recorder.py
 loadusr -W ./drives.py
 loadusr -W ./lubrication.py
+loadusr -W ./error.py
 #loadusr -W ./glasscale.py
 #net __index_enable glasscale.index_enable hm2_7i92.0.encoder.01.index-enable
 #net _count hm2_7i92.0.encoder.01.count => glasscale.count_in

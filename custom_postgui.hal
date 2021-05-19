@@ -4,3 +4,6 @@
 #net _record_button pyvcp.record-button => hal_recorder.record
 #net _record_button pyvcp.record-led
 #net _E4_central_lubrication => pyvcp.lub-led
+
+net _E1_emergency_stop_end_switch => error.estop_endswitch
+net _E24_surveillance_feed_drive => error.drive_surveillance

@@ -109,19 +109,8 @@ net keys matrix_kb.0.keycode
 net keys hm2_7i92.0.7i73.1.0.keycode
 
 #e-stop
-# net _estop hm2_7i92.0.7i73.1.0.input-04
-setp oneshot.0.rising true
-setp oneshot.0.falling false
-setp oneshot.0.width 0.1
-setp oneshot.1.rising false
-setp oneshot.1.falling true
-setp oneshot.1.width 0.1
-
 net _estop_button <= hm2_7i92.0.7i73.1.0.input-04
-net _estop_button => oneshot.0.in
-net _estop_button => oneshot.1.in
-net _estop_trigger <= oneshot.0.out
-net _estop_release <= oneshot.1.out
+
 
 #run / pause buttons
 net _pause_button <= hm2_7i92.0.7i73.1.0.input-03

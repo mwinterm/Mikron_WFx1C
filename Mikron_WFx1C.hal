@@ -45,8 +45,7 @@ addf abs.2                    servo-thread
 addf integ.0                  servo-thread
 addf integ.1                  servo-thread
 addf integ.2                  servo-thread
-addf oneshot.0                servo-thread
-addf oneshot.1                servo-thread
+
 
 
 setp hm2_7i92.0.dpll.01.timer-us -50
@@ -378,11 +377,24 @@ net machine-is-enabled        <=  motion.motion-enabled
 #  ---digital in / out signals---
 
 #  ---estop signals---
+addf oneshot.0 servo-thread
+addf oneshot.1 servo-thread
+setp oneshot.0.rising true
+setp oneshot.0.falling false
+setp oneshot.0.width 0.1
+setp oneshot.1.rising false
+setp oneshot.1.falling true
+setp oneshot.1.width 0.1
+
+net _estop_button => oneshot.0.in
+net _estop_button => oneshot.1.in
+net _estop_trigger <= oneshot.0.out
+net _estop_release <= oneshot.1.out
+
 net _estop_trigger => halui.estop.activate
 net _estop_release => halui.estop.reset
 net _A31_emergency_stop <=  iocontrol.0.user-enable-out
 net _E0_emergency_stop_button => iocontrol.0.emc-enable-in
-#net estop-loop iocontrol.0.user-enable-out iocontrol.0.emc-enable-in # estop loopback
 
 
 #  ---manual tool change signals---

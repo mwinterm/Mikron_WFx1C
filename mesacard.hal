@@ -156,7 +156,6 @@ net _spindle_led => hm2_7i92.0.7i73.1.0.output-11
 #coolant
 net _coolant_button <= matrix_kb.0.key.r2c2
 net _coolant_led => hm2_7i92.0.7i73.1.0.output-12
-net _coolant_led <= halui.flood.is-on
 
 #mode-knob (manual (1, 0), mdi(0, 0), program(0, 1))
 net _mode_knob_1 <= matrix_kb.0.key.r2c4

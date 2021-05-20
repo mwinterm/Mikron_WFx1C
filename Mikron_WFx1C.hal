@@ -12,7 +12,9 @@ loadrt pid names=pid.x,pid.y,pid.z,pid.s
 loadrt matrix_kb config=4x8
 loadrt abs count=3
 loadrt integ count=3
-loadrt oneshot count=2
+loadrt oneshot count=4
+loadrt and2 count=2
+loadrt not count=2
 
 #load user components
 #loadusr -W ./blink.py
@@ -332,6 +334,37 @@ net estop-active          halui.estop.is-activated
 
 #net coolant-mist      <=  iocontrol.0.coolant-mist
 net _A0_coolant_pump  <=  iocontrol.0.coolant-flood
+
+
+#coolant button
+# net _coolant_button <= op_panel.coolant-button
+# net _coolant_is_on halui.flood.is-on 
+
+addf and2.0 servo-thread
+addf oneshot.2 servo-thread
+setp oneshot.2.rising true
+setp oneshot.2.falling false
+setp oneshot.2.width 0.1
+
+net _coolant_button => oneshot.2.in
+net _oneshot2_out oneshot.2.out => and2.0.in0
+net _coolant_is_on => and2.0.in1
+net _coolant_and_on and2.0.out => halui.flood.off
+
+addf and2.1 servo-thread
+addf not.0 servo-thread
+addf oneshot.3 servo-thread
+setp oneshot.3.rising true
+setp oneshot.3.falling false
+setp oneshot.3.width 0.1
+
+net _coolant_button => oneshot.3.in
+net _oneshot3_out oneshot.3.out => and2.1.in0
+net _coolant_is_on => not.0.in
+net _not_coolant not.0.out => and2.1.in1
+net _coolant_and_off and2.1.out => halui.flood.on
+
+net _coolant_led <= halui.flood.is-on
 
 #  ---probe signal---
 

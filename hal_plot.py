@@ -21,7 +21,7 @@ timearg = ''
 
 for opt, arg in opts:
     if opt == '-h':
-        print 'hal_plot.py -i <inputfile> -f <filter: zero | constant | gearbox> -s <file_format>'
+        print 'hal_plot.py -i <inputfile> -f <filter: zero | constant | gearbox> -s <file_format> -t <'[t1,t2]'>'
         sys.exit()
     elif opt in ("-i", "--input"):
         filearg = arg

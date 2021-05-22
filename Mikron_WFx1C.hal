@@ -445,6 +445,21 @@ net _A8_spindle_break <= gearbox.spindle_break
 net _A4_M211_stage_1 <= gearbox.stage_1
 net _A5_M211_stage_2 <= gearbox.stage_2
 
+net _E17_gear_block_1_1 => gearbox.block_1_1
+net _E18_gear_block_1_2 => gearbox.block_1_2
+net _E19_gear_block_2_1 => gearbox.block_2_1
+net _E20_gear_block_2_2 => gearbox.block_2_2
+net _E21_gear_block_3_1 => gearbox.block_3_1
+net _E22_gear_block_3_2 => gearbox.block_3_2
+net _E23_current_measurement => gearbox.current_measurement
+
+net _A16_block_1_forward <= gearbox.block_1_forward
+net _A17_block_1_backward <= gearbox.block_1_backward
+net _A18_block_2_forward <= gearbox.block_2_forward
+net _A19_block_2_backward <= gearbox.block_2_backward
+net _A20_block_3_forward <= gearbox.block_3_forward
+net _A21_block_3_backward <= gearbox.block_3_backward
+
 
 #   ---drive activation and toolchange---
 net estop_active => drives.estop_active

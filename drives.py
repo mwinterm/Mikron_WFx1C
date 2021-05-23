@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import hal
 import time
+from oneshot import Oneshot
 
 h = hal.component("drives")
 
@@ -27,116 +28,92 @@ h.newpin("unclamp_3rd_axis", hal.HAL_BIT, hal.HAL_OUT)
 h.newpin("toolchange_button_out", hal.HAL_BIT, hal.HAL_OUT)
 
 h.newparam("tc_button", hal.HAL_BIT, hal.HAL_RW)
-h.newparam("tc_button_old", hal.HAL_BIT, hal.HAL_RW)
 h.newparam("drives_active", hal.HAL_BIT, hal.HAL_RW)
 h.newparam("debug", hal.HAL_S32, hal.HAL_RW)
 
 h.ready()
 
+tc_button_event = Oneshot(h, "toolchange_button")
+
 h.toolchange_button_led = False
 h.toolchange_button_out = False
 
-start_seq_comp = False
 h.drives_active = False
 h.tc_button = False
-h.tc_button_old = False
+
+drives_on_sequence = False
+drives_off_sequence = False
 
 try:
     while True:
+        #sequence to switch drives on
+        if drives_on_sequence:
+            h.feed_driver = True 
+            if h.e_stop_contactor and h.feed_contactor:
+                h.axis_1_approve = True
+                h.axis_2_approve = True
+                h.axis_3_approve = True
+                h.unclamp_3rd_axis = True
+                h.drives_active = True
+                h.toolchange_button_led = True
+                drives_on_sequence = False
+
+        #sequence to switch drives off
+        if drives_off_sequence:
+            h.axis_1_approve = False
+            h.axis_2_approve = False
+            h.axis_3_approve = False
+            h.unclamp_3rd_axis = False
+            h.feed_driver = False
+            h.prepare_toolchange = True
+            h.drives_active = False
+            h.toolchange_button_led = False
+            drives_off_sequence = False
+
+        #estop behavior
         if h.estop_active:
                 h.debug = 1
-                #action when estop occurs
-                h.axis_1_approve = False
-                h.axis_2_approve = False
-                h.axis_3_approve = False
-                h.unclamp_3rd_axis = False
-                h.feed_driver = False
-                h.prepare_toolchange = True
-                h.drives_active = False
-                h.toolchange_button_led = False
-                h.tc_button = False
+                drives_off_sequence = True
         else:
             # create the toolchange command
-            if h.toolchange_button and not h.tc_button_old:
-                h.debug = 2
+            if tc_button_event.up():
                 h.tc_button = True
-                h.tc_button_old = True
-            elif not h.toolchange_button:
-                #h.debug = 3
-                h.tc_button_old = False
 
-            # if no tool-change is requested and you are in manual mode
+            # if no tool-change is requested and you are not in manual mode
             if not h.tool_change and h.drives_active and not h.halui_mode_is_manual:
                 h.debug = 4
                 h.toolchange_button_out = False
                 h.prepare_toolchange = False
 
             #switch machine on if not yet on
-            if not h.machine_is_on:
+            if not h.machine_is_on and h.tc_button:
                 h.debug = 5
-                start_seq_comp = False
-                if h.toolchange_button:
-                    h.machine_on = True
+                h.machine_on = True
+                h.tc_button = False
+                continue
             
-            if h.machine_is_on and not start_seq_comp:
+            #Switch drives on in manual mode
+            if h.halui_mode_is_manual and h.machine_is_on and not h.drives_active and h.tc_button:
                 h.debug = 6
-                h.feed_driver = True 
-                if h.e_stop_contactor and h.feed_contactor:
-                    h.axis_1_approve = True
-                    h.axis_2_approve = True
-                    h.axis_3_approve = True
-                    h.unclamp_3rd_axis = True
-                    h.drives_active = True
-                    h.toolchange_button_led = True
-                    start_seq_comp = True
+                drives_on_sequence = True
+                h.tc_button = False
 
-            if start_seq_comp:
-                if h.halui_mode_is_manual and h.drives_active and h.tc_button and not h.rpm_surveillance and not h.vel_xyz:
-                    h.debug = 7
-                    h.axis_1_approve = False
-                    h.axis_2_approve = False
-                    h.axis_3_approve = False
-                    h.unclamp_3rd_axis = False
-                    h.feed_driver = False
-                    h.prepare_toolchange = True
-                    h.drives_active = False
-                    h.toolchange_button_led = False
-                    h.tc_button = False
-                elif h.halui_mode_is_manual and not h.drives_active and h.tc_button:
-                    h.debug = 8
-                    h.prepare_toolchange = False
-                    h.feed_driver = True
-                    if h.e_stop_contactor and h.feed_contactor:
-                        h.axis_1_approve = True
-                        h.axis_2_approve = True
-                        h.axis_3_approve = True
-                        h.unclamp_3rd_axis = True
-                        h.toolchange_button_led = True
-                        h.drives_active = True
-                        h.tc_button = False
-                elif h.tool_change and not h.prepare_toolchange:
-                    h.debug = 9
-                    h.axis_1_approve = False
-                    h.axis_2_approve = False
-                    h.axis_3_approve = False
-                    h.unclamp_3rd_axis = False
-                    h.feed_driver = False
-                    h.prepare_toolchange = True
-                    h.toolchange_button_led = False
-                    h.drives_active = False
-                elif h.prepare_toolchange and h.tc_button:
-                    h.debug = 10
-                    # h.prepare_toolchange = False
-                    h.feed_driver = True
-                    if h.e_stop_contactor and h.feed_contactor:
-                        h.axis_1_approve = True
-                        h.axis_2_approve = True
-                        h.axis_3_approve = True
-                        h.unclamp_3rd_axis = True
-                        h.drives_active = True
-                        h.toolchange_button_led = True
-                        h.toolchange_button_out = True
-                        h.tc_button = False
+            #Switch off drives in manual mode
+            if h.halui_mode_is_manual and h.drives_active and h.tc_button and not h.rpm_surveillance and not h.vel_xyz:
+                h.debug = 7
+                drives_off_sequence = True
+                h.tc_button = False
+
+            #Switch drives off for toolchange in automatic operation
+            if h.tool_change and not h.prepare_toolchange and not h.rpm_surveillance and not h.vel_xyz:
+                h.debug = 9
+                drives_off_sequence = True
+
+            #Switch drives on in automatic operation
+            if h.prepare_toolchange and h.tc_button:
+                h.debug = 10
+                drives_on_sequence = True
+                h.tc_button = False
 
 except KeyboardInterrupt:
     raise SystemExit

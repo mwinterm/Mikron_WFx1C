@@ -9,6 +9,8 @@ c = linuxcnc.command()
 
 
 h = hal.component("gearbox")
+h.newpin("estop", hal.HAL_BIT, hal.HAL_IN)
+
 h.newpin("spindle_on", hal.HAL_BIT, hal.HAL_IN)
 h.newpin("forward", hal.HAL_BIT, hal.HAL_IN)
 h.newpin("reverse", hal.HAL_BIT, hal.HAL_IN)
@@ -67,123 +69,145 @@ h.stage_1 = True
 
 try:
     while True:
-
-        #getting gearbox positions
-        for block in ['block_1_', 'block_2_', 'block_3_']:
-            b_1 = block + '1'
-            b_2 = block + '2'
-            if getattr(h, b_1) and getattr(h, b_2):
-                locals()[block + 'pos'] = 0 
-            if not getattr(h, b_1) and getattr(h, b_2):
-                locals()[block + 'pos'] = 1 
-            if getattr(h, b_1) and not getattr(h, b_2):
-                locals()[block + 'pos'] = 2 
-
-        #starting / stopping spindle        
-        if h.spindle_on or spindle_on:
-            if h.forward:
-                h.cw = True
-                h.ccw = False
-            elif h.reverse:
-                h.cw = False
-                h.ccw = True
-            else:
-                c.error_msg("No spindle direction set.") 
-
-            h.spindle_break = False
-            h.spindle_motor = True
-            start_check_timer.start()
-            if not start_check_timer():
-                if not h.rpm_surveillance:
-                    c.error_msg("Spindle start: Spindle not turning.")
-                if not h.spindle_contactor: 
-                    c.error_msg("Spindle start: Spindle contactor problem.")
-
-            soft_start_timer.start()
-            if soft_start_timer():
-                h.soft_start = True
-
-        else:
+        #e-stop behavior
+        if h.estop:
             h.spindle_motor = False
-            h.soft_start = False
-            h.cw = False
-            h.ccw = False
-
             if h.rpm_surveillance:
                 h.spindle_break = True
             else:
                 h.spindle_break = False
-
-        #setting gearbox
-        if not h.spindle_on:
             
+            h.block_1_forward = False
+            h.block_1_backward = False
+            h.block_2_forward = False
+            h.block_2_backward = False
+            h.block_3_forward = False
+            h.block_3_backward = False
+
+            soft_start_timer.stop()
+            start_check_timer.stop()
+            current_timer.stop()
+            block_reset_timer.stop()
+            block_spindle_timer.stop()
+
+        else:
+
+            #getting gearbox positions
             for block in ['block_1_', 'block_2_', 'block_3_']:
                 b_1 = block + '1'
                 b_2 = block + '2'
-                block_forward = getattr(h, block + 'forward')
-                block_backward = getattr(h, block + 'backward')
-                block_cmd = getattr(h, block + 'cmd')
-                block_pos = locals()[block + 'pos']
-                if block_pos != block_cmd:
-                    break
-
-            #release any blockage
-            if current_timer.alarm():
-                if current_alarm_type == "":
-                    if block_forward:
-                        current_alarm_type = "block_forward"
-                    elif block_backward:
-                        current_alarm_type = "block_backward"
-
-                if current_alarm_type == "block_forward":
-                    block_forward = False
-                    block_reset_timer.start()
-                    if block_reset_timer():
-                        block_backward = True
-                        continue
-                    else:
-                        block_backward = False
-                        block_spindle_timer.start()
-                        continue
-
-                elif current_alarm_type == "block_1_backward":
-                    block_backward = False
-                    block_reset_timer.start()
-                    if block_reset_timer():
-                        block_forward = True
-                        continue
-                    else:
+                if getattr(h, b_1) and getattr(h, b_2):
+                    locals()[block + 'pos'] = 0 
+                if not getattr(h, b_1) and getattr(h, b_2):
+                    locals()[block + 'pos'] = 1 
+                if getattr(h, b_1) and not getattr(h, b_2):
+                    locals()[block + 'pos'] = 2 
+    
+            #starting / stopping spindle        
+            if h.spindle_on or spindle_on:
+                if h.forward:
+                    h.cw = True
+                    h.ccw = False
+                elif h.reverse:
+                    h.cw = False
+                    h.ccw = True
+                else:
+                    c.error_msg("No spindle direction set.") 
+    
+                h.spindle_break = False
+                h.spindle_motor = True
+                start_check_timer.start()
+                if not start_check_timer():
+                    if not h.rpm_surveillance:
+                        c.error_msg("Spindle start: Spindle not turning.")
+                    if not h.spindle_contactor: 
+                        c.error_msg("Spindle start: Spindle contactor problem.")
+    
+                soft_start_timer.start()
+                if soft_start_timer():
+                    h.soft_start = True
+    
+            else:
+                h.spindle_motor = False
+                h.soft_start = False
+                h.cw = False
+                h.ccw = False
+    
+                if h.rpm_surveillance:
+                    h.spindle_break = True
+                else:
+                    h.spindle_break = False
+    
+            #setting gearbox
+            if not h.spindle_on:
+                
+                for block in ['block_1_', 'block_2_', 'block_3_']:
+                    b_1 = block + '1'
+                    b_2 = block + '2'
+                    block_forward = getattr(h, block + 'forward')
+                    block_backward = getattr(h, block + 'backward')
+                    block_cmd = getattr(h, block + 'cmd')
+                    block_pos = locals()[block + 'pos']
+                    if block_pos != block_cmd:
+                        break
+                    
+                #release any blockage
+                if current_timer.alarm():
+                    if current_alarm_type == "":
+                        if block_forward:
+                            current_alarm_type = "block_forward"
+                        elif block_backward:
+                            current_alarm_type = "block_backward"
+    
+                    if current_alarm_type == "block_forward":
                         block_forward = False
-                        block_spindle_timer.start()
+                        block_reset_timer.start()
+                        if block_reset_timer():
+                            block_backward = True
+                            continue
+                        else:
+                            block_backward = False
+                            block_spindle_timer.start()
+                            continue
+                        
+                    elif current_alarm_type == "block_1_backward":
+                        block_backward = False
+                        block_reset_timer.start()
+                        if block_reset_timer():
+                            block_forward = True
+                            continue
+                        else:
+                            block_forward = False
+                            block_spindle_timer.start()
+                            continue
+                        
+                    if block_spindle_timer():
+                        spindle_on = True
                         continue
-
-                if block_spindle_timer():
-                    spindle_on = True
-                    continue
-                else:
-                    spindle_on = False
-
-                current_timer.stop()
-                current_alarm_type = ""
-
-            #Set the gearbox
-            if block_cmd > block_pos:
-                block_forward = True
-                block_backward = False
-                if h.current_measurement:
-                    current_timer.start()
-                else:
+                    else:
+                        spindle_on = False
+    
                     current_timer.stop()
-            elif block_cmd < block_pos:
-                block_forward = False
-                block_backward = True
-                if h.current_measurement:
-                    current_timer.start()
-                else:
-                    current_timer.stop()
-            elif block_cmd == block_pos:
-                block_forward = False
-                block_backward = False
+                    current_alarm_type = ""
+    
+                #Set the gearbox
+                if block_cmd > block_pos:
+                    block_forward = True
+                    block_backward = False
+                    if h.current_measurement:
+                        current_timer.start()
+                    else:
+                        current_timer.stop()
+                elif block_cmd < block_pos:
+                    block_forward = False
+                    block_backward = True
+                    if h.current_measurement:
+                        current_timer.start()
+                    else:
+                        current_timer.stop()
+                elif block_cmd == block_pos:
+                    block_forward = False
+                    block_backward = False
 
 
 except KeyboardInterrupt:

@@ -12,8 +12,9 @@ class Debug:
 
     @level.setter
     def level(self, my_level):
-        self.__level = my_level
-        self.__output = True
+        if self.__level != my_level:
+            self.__level = my_level
+            self.__output = True
     
     def __str__(self):
         if self.__output:

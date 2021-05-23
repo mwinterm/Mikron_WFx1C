@@ -4,20 +4,16 @@ from linuxcnc_timer import Timer
 
 class mbool:
     def __init__(self, value = False):
-        self.state = value
+        self.__state = value
     
     @property
-    def state(self, name):
-        return self.__dict__[name]
+    def state(self):
+        return self.__state
     
     @state.setter
-    def state(self, name, value):
-        self.__dict__[name] = value
+    def state(self, value):
+        self.__state = value
     
-
-
-
-
 
 class Oneshot:
     def __init__(self, component, pin_name, shot_time=0.1):

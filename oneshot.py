@@ -2,7 +2,7 @@
 
 from linuxcnc_timer import Timer
 
-class mbool:
+class mbool(object):
     def __init__(self, value = False):
         self.__state = value
     
@@ -15,7 +15,7 @@ class mbool:
         self.__state = value
     
 
-class Oneshot:
+class Oneshot(object):
     def __init__(self, component, pin_name, shot_time=0.1):
         self._component = component
         self._pin_name = pin_name

@@ -1,29 +1,29 @@
 #debug.py
 
-class Debug:
-    def __init__(self, name='debug', level=-1):
-        self.__level = level
+class Debug(object):
+    def __init__(self, name="Debug", value = -1):
         self.__name = name
-        self.__output = True
-
+        self.__level = value
+        self.__changed = True
+    
     @property
     def level(self):
         return self.__level
-
-    @level.setter
-    def level(self, my_level):
-        if self.__level != my_level:
-            self.__level = my_level
-            self.__output = True
     
+    @level.setter
+    def level(self, value):
+        if self.__level != value:
+            self.__level = value
+            self.__changed = True
+
     def __str__(self):
-        if self.__output:
-            self.__output = False
-            return self.__name + ": " + str(self.__level)
+        if self.__changed:
+            self.__changed = False
+            return self.__name + ': ' + str(self.__level)
         else:
-            return ''
+            return ""
 
     def msg(self):
-        if self.__output:
-            self.__output = False
-            print(self.__name + ": " + str(self.__level))
+        if self.__changed:
+            self.__changed = False
+            print(self.__name + ': ' + str(self.__level))

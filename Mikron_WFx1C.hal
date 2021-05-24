@@ -394,6 +394,7 @@ setp lubrication.lub_interval_time      [LUBRICATION]LUB_INTERVAL_TIME
 setp lubrication.num_cycles             [LUBRICATION]NUM_CYCLES
 setp lubrication.start_cycles_pause     [LUBRICATION]START_CYCLES_PAUSE
 setp lubrication.lub_warning_interval   [LUBRICATION]LUB_WARNING_INTERVAL
+setp lubrication.max_lub_pressure_delay [LUBRICATION]MAX_LUB_PRESSURE_DELAY
 
 setp lubrication.joint0_lub_dist        [LUBRICATION]JOINT0_LUB_DIST
 setp lubrication.joint1_lub_dist        [LUBRICATION]JOINT1_LUB_DIST

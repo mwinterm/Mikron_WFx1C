@@ -3,7 +3,7 @@
 import time
 
 
-class Timer:
+class Timer(object):
     def __init__(self, value=None):
         self._start_time = None
         self._is_running = None
@@ -15,6 +15,11 @@ class Timer:
             self._start_time = time.time()
             self._is_running = True
             self._alarm = False
+
+    def restart(self):
+        self._start_time = time.time()
+        self._is_running = True
+        self._alarm = False  
 
     def stop(self):
         self._is_running = False
@@ -32,7 +37,7 @@ class Timer:
         if self._is_running and self._time_value:
             return time.time() - self._start_time
         else: 
-            return None
+            return -1.0
 
     def __call__(self):
         self.update()
@@ -44,4 +49,6 @@ class Timer:
     def alarm(self):
         self.update()
         return self._alarm
+
+     
 

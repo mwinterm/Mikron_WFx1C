@@ -28,11 +28,9 @@ class Oneshot(object):
         if not self._pin_old and getattr(self._component, self._pin_name):
             self._up_timer.start()
             self._pin_old = True
-            print("up_timer started")
         elif self._pin_old and not getattr(self._component, self._pin_name):
             self._down_timer.start()
             self._pin_old = False
-            print("down_timer started")
 
     def up(self):
         self.update()

@@ -174,7 +174,7 @@ net y-pos-fb               <=  hm2_7i92.0.encoder.01.position
 net y-vel-fb               <=  hm2_7i92.0.encoder.01.velocity
 net y-pos-fb               =>  joint.1.motor-pos-fb
 net y-index-enable         <=  joint.1.index-enable  
-net y-index_enable         =>  hm2_7i92.0.encoder.01.index-enable
+net y-index-enable         =>  hm2_7i92.0.encoder.01.index-enable
 net y-pos-rawcounts        =>  joint.1.motor-pos-raw-fb
 net y-pos-rawcounts        <=  hm2_7i92.0.encoder.01.rawcounts
 
@@ -464,9 +464,11 @@ net _A21_block_3_backward <= gearbox.block_3_backward
 
 #   ---drive activation and toolchange---
 net estop_active => drives.estop_active
+net _E1_emergency_stop_end_switch => drives.estop_endswitch_active
 net _toolchange_button => drives.toolchange_button
 net machine-is-on => drives.machine_is_on
 net tool-change => drives.tool_change
+net _E25_feed_drive_ready => drives.feed_drive_ready
 net _E10_emergency_stop_contactor => drives.e_stop_contactor
 net _A12_feed_driver <= drives.feed_driver
 net _E9_feed_contactor => drives.feed_contactor
@@ -477,7 +479,7 @@ net _machine_on drives.machine_on => halui.machine.on
 net _toolchange_led <= drives.toolchange_button_led
 net _tc_button_out drives.toolchange_button_out => hal_manualtoolchange.change_button
 net _A9_prepare_toolchange <= drives.prepare_toolchange 
-#net _A10_unclamp_3rd_axis <= drives.unclamp_3rd_axis
-net _A22_axis_1_approve <= drives.axis_1_approve
+#net _A22_axis_1_approve <= drives.axis_1_approve
 #net _A23_axis_2_approve <= drives.axis_2_approve
-#net _A24_axis_3_approve <= drives.axis_3_approve
+net _A24_axis_3_approve <= drives.axis_3_approve
+net _A10_unclamp_3rd_axis <= drives.unclamp_3rd_axis

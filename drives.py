@@ -2,6 +2,8 @@
 import hal
 import time
 from oneshot import Oneshot
+from debug import Debug
+from linuxcnc_timer import Timer
 
 h = hal.component("drives")
 
@@ -10,8 +12,10 @@ h.newpin("machine_is_on", hal.HAL_BIT, hal.HAL_IN)
 h.newpin("tool_change", hal.HAL_BIT, hal.HAL_IN)
 h.newpin("toolchange_button", hal.HAL_BIT, hal.HAL_IN)
 h.newpin("estop_active", hal.HAL_BIT, hal.HAL_IN)
+h.newpin("estop_endswitch_active", hal.HAL_BIT, hal.HAL_IN)
 h.newpin("e_stop_contactor", hal.HAL_BIT, hal.HAL_IN)
 h.newpin("feed_contactor", hal.HAL_BIT, hal.HAL_IN)
+h.newpin("feed_drive_ready", hal.HAL_BIT, hal.HAL_IN)
 h.newpin("halui_mode_is_manual", hal.HAL_BIT, hal.HAL_IN)
 h.newpin("rpm_surveillance", hal.HAL_BIT, hal.HAL_IN)
 h.newpin("vel_xyz", hal.HAL_FLOAT, hal.HAL_IN)
@@ -44,19 +48,26 @@ h.tc_button = False
 drives_on_sequence = False
 drives_off_sequence = False
 
+d = Debug()
+
 try:
     while True:
+        #always clamp 3rd axis when feed-drive not ready (avoid drop of table)
+        if not h.feed_drive_ready:
+            h.unclamp_3rd_axis = False
+
         #sequence to switch drives on
         if drives_on_sequence:
             h.feed_driver = True 
             if h.e_stop_contactor and h.feed_contactor:
+                h.drives_active = True
                 h.axis_1_approve = True
                 h.axis_2_approve = True
                 h.axis_3_approve = True
                 h.unclamp_3rd_axis = True
-                h.drives_active = True
                 h.toolchange_button_led = True
                 drives_on_sequence = False
+            continue
 
         #sequence to switch drives off
         if drives_off_sequence:
@@ -69,9 +80,10 @@ try:
             h.drives_active = False
             h.toolchange_button_led = False
             drives_off_sequence = False
+            continue
 
         #estop behavior
-        if h.estop_active:
+        if h.estop_active or h.estop_endswitch_active:
                 h.debug = 1
                 drives_off_sequence = True
         else:

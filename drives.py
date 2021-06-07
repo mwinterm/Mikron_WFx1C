@@ -3,7 +3,6 @@ import hal
 import time
 from oneshot import Oneshot
 from debug import Debug
-from linuxcnc_timer import Timer
 
 h = hal.component("drives")
 

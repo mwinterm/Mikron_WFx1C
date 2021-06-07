@@ -1,0 +1,15 @@
+# halshow watchlist created Wed May 19 13:56:19 CEST 2021
+
+pin+hm2_7i92.0.encoder.01.count
+pin+hm2_7i92.0.encoder.01.index-enable
+pin+hm2_7i92.0.encoder.01.index-rawcounts
+pin+hm2_7i92.0.encoder.01.input-index
+pin+hm2_7i92.0.encoder.01.reset-on-index
+pin+hm2_7i92.0.encoder.01.reset
+pin+hm2_7i92.0.encoder.01.rawcounts
+pin+hm2_7i92.0.encoder.01.position
+pin+hm2_7i92.0.encoder.01.position-latched
+pin+hm2_7i92.0.encoder.01.rawlatch
+pin+joint.1.motor-pos-fb
+pin+joint.2.motor-offset
+pin+joint.3.motor-pos-raw-fb

@@ -134,6 +134,8 @@ try:
                 joint1_hubs = 0
                 joint2_hubs = 0
                 lub_interval_timer.restart()
+                start_cycles_pause_timer.stop()
+                lub_cycle_timer.stop()
                 if(h.num_cycles < 0):
                     start_cycles_pause_timer.start()
 

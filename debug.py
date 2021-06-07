@@ -5,6 +5,7 @@ class Debug(object):
         self.__name = name
         self.__level = value
         self.__changed = True
+        self._vocal = False
     
     @property
     def level(self):
@@ -15,6 +16,8 @@ class Debug(object):
         if self.__level != value:
             self.__level = value
             self.__changed = True
+            if self._vocal: 
+                print(self.__name + ': ' + str(self.__level))
 
     def __str__(self):
         if self.__changed:

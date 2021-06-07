@@ -375,8 +375,8 @@ net _estop_release <= oneshot.1.out
 
 net _estop_trigger => halui.estop.activate
 net _estop_release => halui.estop.reset
-net _A31_emergency_stop <=  iocontrol.0.user-enable-out
-net _E0_emergency_stop_button => iocontrol.0.emc-enable-in
+# net _A31_emergency_stop <=  iocontrol.0.user-enable-out
+# net _E0_emergency_stop_button => iocontrol.0.emc-enable-in
 
 
 #  ---manual tool change signals---
@@ -432,6 +432,7 @@ net _E4_central_lubrication => lubrication.lub_pressure
 
 
 #   ---spindle and gearbox---
+net estop-active => gearbox.estop
 net spindle-manual-cw => gearbox.forward
 net spindle-manual-ccw => gearbox.reverse
 net _spindle_on spindle.0.on => gearbox.spindle_on
@@ -462,8 +463,13 @@ net _A20_block_3_forward <= gearbox.block_3_forward
 net _A21_block_3_backward <= gearbox.block_3_backward
 
 
+#   ---e-stop---
+addf not.1 servo-thread
+net estop-active => not.1.in
+net _A31_emergency_stop <= not.1.out
+
 #   ---drive activation and toolchange---
-net estop_active => drives.estop_active
+net estop-active => drives.estop_active
 net _E1_emergency_stop_end_switch => drives.estop_endswitch_active
 net _toolchange_button => drives.toolchange_button
 net machine-is-on => drives.machine_is_on

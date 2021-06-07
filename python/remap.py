@@ -16,13 +16,15 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
+from stdglue import *
+
 import hal
 import linuxcnc
+import emccanon
 
 from interpreter import *
-from emccanon import MESSAGE, SET_MOTION_OUTPUT_BIT, CLEAR_MOTION_OUTPUT_BIT,SET_AUX_OUTPUT_BIT,CLEAR_AUX_OUTPUT_BIT
 
-c = linuxcnc.command()
+cmd = linuxcnc.command()
 
 # Lubrication cycle
 def m901(self, **words):
@@ -38,35 +40,121 @@ def m901(self, **words):
 
 def m910(self, **words):
     if not words.has_key('p'):
-        c.error_msg("M910 requires a P value to specify the gearbox block")
+        cmd.error_msg("M910 requires a P value to specify the gearbox block")
     if int(words['p']) not in [1, 2, 3]:
-        c.error_msg("M910 error: P value for gearbox block selection has to be 1, 2 or 3")
+        cmd.error_msg("M910 error: P value for gearbox block selection has to be 1, 2 or 3")
 
     if not words.has_key('q'):
-        c.error_msg("M910 requires a Q value to specify the gearbox block position")
-    if int(words['q']) not in [0, 1, 2]:
-        c.error_msg("M910 error: Q value for gearbox block position has to be 0, 1 or 2")
+        cmd.error_msg("M910 requires a Q value to specify the gearbox block position")
+    if int(words['q']) not in [1, 2, 3]:
+        cmd.error_msg("M910 error: Q value for gearbox block position has to be 1, 2 or 3")
 
     hal.set_p("gearbox.block_" + str(int(words['p'])) + "_cmd", str(int(words['q'])))
 
+def setspeed(self, **words):
+    try:
+        c = self.blocks[self.remap_level]
+        if not c.s_flag:
+            self.set_errormsg("S requires a value") 
+            return INTERP_ERROR
+        self.params["speed"] = c.s_number
 
+        speeds = {
+            0: [2, 3, 2, 1],
+            40: [2, 3, 3, 1],
+            50: [3, 3, 3, 1],
+            63: [1, 3, 3, 1],
+            80: [2, 1, 3, 1],
+            100: [3, 1, 3, 1],
+            125: [1, 1, 3, 1],
+            160: [2, 2, 3, 1],
+            200: [3, 2, 3, 1],
+            250: [1, 2, 3, 1],
+            315: [2, 3, 1, 1],
+            400: [3, 3, 1, 1],
+            500: [1, 3, 1, 1],
+            630: [2, 1, 1, 1],
+            800: [3, 1, 1, 1],
+            1000: [1, 1, 1, 1],
+            1250: [2, 2, 1, 1],
+            1600: [3, 2, 1, 1],
+            2000: [1, 2, 1, 1],
+            2500: [2, 2, 1, 2],
+            3150: [3, 2, 1, 2],
+            4000: [1, 2, 1, 2]
+            }
 
-def setspeed(self,**words):
-    if self.task==0:
-        return INTERP_OK #do nothing in preview or simulation mod
+        if c.s_number in speeds:
+            gear = speeds[c.s_number]
+            hal.set_p("gearbox.block_1_cmd", str(gear[0]))
+            hal.set_p("gearbox.block_2_cmd", str(gear[1]))
+            hal.set_p("gearbox.block_3_cmd", str(gear[2]))
+            if gear[3] == 1:
+                hal.set_p("gearbox.stage_1", '1')
+                hal.set_p("gearbox.stage_2", '0')
+            else:
+                hal.set_p("gearbox.stage_1", '0')
+                hal.set_p("gearbox.stage_2", '1')
 
-    c = self.blocks[self.remap_level]
-    if not c.s_flag:
-        self.set_errormsg("S requires a value") 
+        emccanon.enqueue_SET_SPINDLE_SPEED(0, c.s_number)
+        print("SETSPEED: Here I am")
+        return INTERP_OK
+
+    except Exception, e:
+        self.set_errormsg("Setspeed: %s" % (e))
         return INTERP_ERROR
 
-    speed = int(c.s_number)
 
-    speeds = [0, 40, 50, 63, 80, 100, 125, 160, 200, 250, 315, 400, 500, 630, 800, 1000, 1250, 1600, 2000, 2500, 3150, 4000]
-  
+def setspeed_new(self,**words):    
+    speed = 0
+    c = self.blocks[self.remap_level]
+    if c.s_flag:
+        speed = int(c.s_number)
+    else: 
+        cmd.error_msg("S command without speed value was provided")
+        
+    speeds = {
+        0: [2, 3, 2, 1],
+        40: [2, 3, 3, 1],
+        50: [3, 3, 3, 1],
+        63: [1, 3, 3, 1],
+        80: [2, 1, 3, 1],
+        100: [3, 1, 3, 1],
+        125: [1, 1, 3, 1],
+        160: [2, 2, 3, 1],
+        200: [3, 2, 3, 1],
+        250: [1, 2, 3, 1],
+        315: [2, 3, 1, 1],
+        400: [3, 3, 1, 1],
+        500: [1, 3, 1, 1],
+        630: [2, 1, 1, 1],
+        800: [3, 1, 1, 1],
+        1000: [1, 1, 1, 1],
+        1250: [2, 2, 1, 1],
+        1600: [3, 2, 1, 1],
+        2000: [1, 2, 1, 1],
+        2500: [2, 2, 1, 2],
+        3150: [3, 2, 1, 2],
+        4000: [1, 2, 1, 2]
+        }
+
+
     if speed in speeds:
-        hal.set_p("geared_spindle.rpms", str(speed))
+        gear = speeds[speed]
+        hal.set_p("gearbox.block_1_cmd", str(gear[0]))
+        hal.set_p("gearbox.block_2_cmd", str(gear[1]))
+        hal.set_p("gearbox.block_3_cmd", str(gear[2]))
+        if gear[3] == 1:
+            hal.set_p("gearbox.stage_1", '1')
+            hal.set_p("gearbox.stage_2", '0')
+        else:
+            hal.set_p("gearbox.stage_1", '0')
+            hal.set_p("gearbox.stage_2", '1')
+
+        emccanon.enqueue_SET_SPINDLE_SPEED(0, float(speed))
+
+        print("gearbox set")
     else:
-        self.set_errormsg("Spindle speed not available")
+        cmd.error_msg("Spindle speed not available")
 
 

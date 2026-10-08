@@ -12,21 +12,32 @@ edge. LeafCNC arms channels 00-02, the X, Y and Z scales, for a probing move
 
 ## What changed
 
-The file is Mesa's `PIN_7I77_7I74D_6SS_34.vhd` (the same layout with port 1
-cut to six smart-serial channels) with two changes:
+The file is Mesa's `PIN_7I77_7I74D_34.vhd` with two changes:
 
-- **I/O 27**, the 7I74's channel 6 receive pair, is the muxed encoder
-  module's probe input, `MuxedQCountProbePin`. A module has one probe input,
-  and all six counters share it.
+- **I/O 16** is the muxed encoder module's probe input,
+  `MuxedQCountProbePin`. It was the index line of the 7I77's channels 4 and
+  5. A module has one probe input, and all six counters share it.
 - The muxed encoder module reports version **0x84** (`MQCRevP`). The hostmot2
   driver creates `encoder.NN.probe-enable` and `probe-invert` only for that
   version.
 
-What it costs: port 1's channels 6 and 7 are gone, and I/O 28 and 31-33 are
-plain GPIO. The WF41C uses channels 0 (7I73), 2 (7I70) and 4 (7I84) there, and
-`sserial_port_1=10000000` reads the same.
+**Why I/O 16.** The 7I77 does not wire each encoder to the FPGA on its own
+lines. Each A, B and index line carries two channels, switched between them
+about four million times a second: channels 0 and 1 on I/O 8-10, 2 and 3 on
+I/O 11-13, 4 and 5 on I/O 14-16 (the demultiplexer in Mesa's `hostmot2.vhd`
+takes the even channel in one phase and the odd one in the other). Channel 3's
+index shares its line with channel 2's, which carries the Z scale's reference
+marks, so it cannot be the probe. Channels 4 and 5 are both spare. **The
+probe is wired to both their index inputs**, so the line shows it in both
+phases, and the FPGA takes the line as the probe input.
 
-The probe's level is still readable every cycle as `hm2_7i92.0.gpio.027.in`:
+What it costs: channels 4 and 5 have no index input any more. They still
+count A and B, should they ever be needed. Their index is tied low --
+ISE says so as a warning, that the muxed index of pair 2 has no source and
+is connected to ground -- and the 7I74 keeps all eight smart-serial
+channels.
+
+The probe's level is still readable every cycle as `hm2_7i92.0.gpio.016.in`:
 hostmot2 gives every pin a GPIO input, whatever module owns it.
 
 `check/` holds a test bench that runs the PIN file's derived constants through
@@ -36,8 +47,9 @@ GHDL, the open-source VHDL simulator. Run it from this directory:
 check/check.sh <unpacked hostmot2 source directory>
 ```
 
-It reports that the probe pin exists, that port 0 has 3 channels and port 1
-has 6, and that the muxed encoder's version is 132 (0x84).
+It reports the probe input on I/O 16 and only there, the index lines of
+channels 0-1 (I/O 10) and 2-3 (I/O 13), 3 smart-serial channels on port 0 and
+8 on port 1, and the muxed encoder's version, 132 (0x84).
 
 ## Source
 
@@ -72,7 +84,7 @@ mesaflash --device 7i92 --addr 10.10.10.10 --backup-flash   # keep it
 mesaflash --device 7i92 --addr 10.10.10.10 --write 7i92_7i77_7i74DP.bit
 mesaflash --device 7i92 --addr 10.10.10.10 --verify 7i92_7i77_7i74DP.bit
 mesaflash --device 7i92 --addr 10.10.10.10 --reload
-mesaflash --device 7i92 --addr 10.10.10.10 --readhmid       # MuxedQCount 0x84, IO27 probe
+mesaflash --device 7i92 --addr 10.10.10.10 --readhmid       # MuxedQCount 0x84, IO16 probe
 ```
 
 The card keeps a fallback image, so a bad user image is recoverable.
@@ -84,32 +96,39 @@ which one feeds it for each probing move. They are never used together, and
 a plain OR would not work: a cable-wired probe out of the spindle reads as
 triggered.
 
-- **Selection.** A relay driven by one of the control's outputs (a 7I84 or
-  7I77 field output) connects either the probe interface's contact or the
-  setter's 5 V output to the adapter below. The relay's rest position is the
-  probe.
-- **Each device's own level** also goes to an ordinary input (the 7I70 had
-  free inputs in this configuration). The control can then check that the
-  selected one is the one that fired.
-- **Adapter to RS-422.** Jack 6 is an RS-422 receiver with 120 ohm
-  termination, so the signal goes in through one line driver, for example an
-  AM26C31 powered from the jack:
+```
+                 +5 V (7I77 TB4 pin 14 or 22)
+                  |
+Renishaw    --[contact]--+-------- NC o\         relay, coil on a spare output
+interface               10k          o-- COM --+--> TB4 pin 15  IDX4
+                         |                     +--> TB4 pin 23  IDX5
+Setter 5 V out --------------------- NO o     1k
+                                                |
+                                     GND (TB4 pin 11 or 19)
+```
 
-  | Jack 6 (RJ45) | Use |
-  |---|---|
-  | 7, 8 (+5 V) | driver's VCC, and the contact's supply |
-  | 4, 5 (GND) | driver's GND |
-  | 6 (RX+) | driver output Y |
-  | 3 (RX-) | driver output Z |
-
-  The driver's input has a 10 k pull-down. The probe interface's contact
-  switches it to +5 V, or the setter's 5 V output drives it. Tie enable G to
-  +5 V and /G to GND. Which level means "triggered" is set in software
-  (`probe-invert`).
+- **Jumpers.** Channels 4 and 5's index inputs single-ended: W11 (IDX4) and
+  W3 (IDX5) in the left-hand position. Their A and B jumpers do not matter.
+  IDX4- and IDX5- (TB4 pins 16 and 24) stay unconnected.
+- **Both inputs, always.** With the probe on only one of them, the line
+  would show the probe half the time and an open input the other half.
+- **Measure first.** The 7I77's manual does not say whether a single-ended
+  input is pulled up when nothing drives it. With the jumpers set and nothing
+  connected, measure IDX4+ against ground. Near 0 V: the wiring above, a
+  contact switching +5 V with the pull-downs. Near 5 V: it is pulled up; then
+  each device pulls the line to ground instead, and the polarity is inverted
+  in software (`probe-invert`).
+- **Selection.** The relay rests on the spindle probe; a spare output of the
+  control energizes it for the setter. The control switches it before a
+  probing move and waits for it to settle.
+- **Each device's own level**, optionally, to an ordinary input, so the
+  control can tell which one fired. Without that both use the line's own
+  level, `gpio.016.in`.
 
 ## The driver
 
-The hostmot2 driver clears `probe-enable` itself when the probe fires.
-`hm2-host` (driver-hostmot2) must publish that pin both ways and apply it only
-when it changes, as it already does for `index-enable`. Otherwise it re-arms
-the latch every cycle and the core never sees it fire.
+The hostmot2 driver clears `probe-enable` itself when the probe latches, though
+it declares the pin an input. `hm2-host` (driver-hostmot2, branch
+`feature/probe-enable`) publishes it both ways and applies it only when it
+changes, as it does `index-enable`. Without that it re-arms the latch every
+cycle and the core never sees it fire.

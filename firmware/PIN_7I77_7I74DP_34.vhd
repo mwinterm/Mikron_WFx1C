@@ -124,7 +124,7 @@ package PIN_7I77_7I74DP_34 is
 		IOPortTag & x"01" & MuxedQCountTag & MuxedQCountIDXPin,		-- I/O 13	PIN 10
 		IOPortTag & x"02" & MuxedQCountTag & MuxedQCountQAPin,		-- I/O 14	PIN 11
 		IOPortTag & x"02" & MuxedQCountTag & MuxedQCountQBPin,		-- I/O 15	PIN 12
-		IOPortTag & x"02" & MuxedQCountTag & MuxedQCountIDXPin,		-- I/O 16	PIN 13
+		IOPortTag & x"00" & MuxedQCountTag & MuxedQCountProbePin,	-- I/O 16	PIN 13
 
 																						--		P2 	26 HDR	DB25			
 		IOPortTag & x"01" & SSerialTag & SSerialRX0Pin, 				-- I/O 17	PIN 1		PIN 1 
@@ -137,13 +137,13 @@ package PIN_7I77_7I74DP_34 is
 		IOPortTag & x"01" & SSerialTag & SSerialTX3Pin, 				-- I/O 24	PIN 8		PIN 17
 		IOPortTag & x"01" & SSerialTag & SSerialRX4Pin, 				-- I/O 25	PIN 9		PIN 5
 		IOPortTag & x"01" & SSerialTag & SSerialRX5Pin, 				-- I/O 26	PIN 11	PIN 6
-		IOPortTag & x"00" & MuxedQCountTag & MuxedQCountProbePin,	-- I/O 27	PIN 13	PIN 7
-		IOPortTag & x"00" & NullTag & x"00",								-- I/O 28	PIN 15	PIN 8
+		IOPortTag & x"01" & SSerialTag & SSerialRX6Pin, 				-- I/O 27	PIN 13	PIN 7
+		IOPortTag & x"01" & SSerialTag & SSerialRX7Pin, 				-- I/O 28	PIN 15	PIN 8
 		IOPortTag & x"01" & SSerialTag & SSerialTX4Pin, 				-- I/O 29	PIN 17	PIN 9
 		IOPortTag & x"01" & SSerialTag & SSerialTX5Pin, 				-- I/O 30	PIN 19	PIN 10
-		IOPortTag & x"00" & NullTag & x"00",								-- I/O 31	PIN 21	PIN 11
-		IOPortTag & x"00" & NullTag & x"00",								-- I/O 32	PIN 23	PIN 12
-		IOPortTag & x"00" & NullTag & x"00",								-- I/O 33	PIN 25	PIN 13
+		IOPortTag & x"01" & SSerialTag & SSerialTX6Pin, 				-- I/O 31	PIN 21	PIN 11
+		IOPortTag & x"01" & SSerialTag & SSerialTX7Pin, 				-- I/O 32	PIN 23	PIN 12
+		IOPortTag & x"01" & SSerialTag & SSerialTXEn7Pin, 				-- I/O 33	PIN 25	PIN 13
 
 		emptypin,emptypin,emptypin,emptypin,emptypin,emptypin,emptypin,emptypin, -- added for 34 pin 5I25
 		emptypin,emptypin,emptypin,emptypin,emptypin,emptypin,

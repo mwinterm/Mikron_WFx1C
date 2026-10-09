@@ -74,7 +74,7 @@ package PIN_7I77_7I74DP_34 is
 		(HM2DPLLTag,	x"00",	ClockLowTag,	x"01",	HM2DPLLBaseRateAddr&PadT,	HM2DPLLNumRegs,		x"00",	HM2DPLLMPBitMask),
 		(WatchDogTag,	x"00",	ClockLowTag,	x"01",	WatchDogTimeAddr&PadT,		WatchDogNumRegs,		x"00",	WatchDogMPBitMask),
 		(IOPortTag,		x"00",	ClockLowTag,	x"02",	PortAddr&PadT,					IOPortNumRegs,			x"00",	IOPortMPBitMask),
-		(MuxedQcountTag,		MQCRevP,	ClockLowTag,	x"06",	MuxedQcounterAddr&PadT,		MuxedQCounterNumRegs,x"00",	MuxedQCounterMPBitMask),
+		(MuxedQcountTag,		MQCRevP,	ClockLowTag,	x"04",	MuxedQcounterAddr&PadT,		MuxedQCounterNumRegs,x"00",	MuxedQCounterMPBitMask),
 		(MuxedQCountSelTag,	x"00",	ClockLowTag,	x"01",	NullAddr&PadT,					x"00",					x"00",	x"00000000"),
 		(SSerialTag,	x"00",	ClockLowTag,	x"02",	SSerialCommandAddr&PadT,	SSerialNumRegs,		x"10",	SSerialMPBitMask),
 		(LEDTag,			x"00",	ClockLowTag,	x"01",	LEDAddr&PadT,					LEDNumRegs,				x"00",	LEDMPBitMask),
@@ -122,8 +122,8 @@ package PIN_7I77_7I74DP_34 is
 		IOPortTag & x"01" & MuxedQCountTag & MuxedQCountQAPin,		-- I/O 11	PIN 8
 		IOPortTag & x"01" & MuxedQCountTag & MuxedQCountQBPin,		-- I/O 12	PIN 9
 		IOPortTag & x"01" & MuxedQCountTag & MuxedQCountIDXPin,		-- I/O 13	PIN 10
-		IOPortTag & x"02" & MuxedQCountTag & MuxedQCountQAPin,		-- I/O 14	PIN 11
-		IOPortTag & x"02" & MuxedQCountTag & MuxedQCountQBPin,		-- I/O 15	PIN 12
+		IOPortTag & x"00" & NullTag & x"00",						-- I/O 14	PIN 11
+		IOPortTag & x"00" & NullTag & x"00",						-- I/O 15	PIN 12
 		IOPortTag & x"00" & MuxedQCountTag & MuxedQCountProbePin,	-- I/O 16	PIN 13
 
 																						--		P2 	26 HDR	DB25			

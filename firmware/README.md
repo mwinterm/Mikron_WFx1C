@@ -12,11 +12,16 @@ edge. LeafCNC arms channels 00-02, the X, Y and Z scales, for a probing move
 
 ## What changed
 
-The file is Mesa's `PIN_7I77_7I74D_34.vhd` with two changes:
+The file is Mesa's `PIN_7I77_7I74D_34.vhd` with three changes:
 
 - **I/O 16** is the muxed encoder module's probe input,
   `MuxedQCountProbePin`. It was the index line of the 7I77's channels 4 and
-  5. A module has one probe input, and all six counters share it.
+  5. A module has one probe input, and all its counters share it.
+- **Four muxed counters, not six**: channels 4 and 5 are dropped, and I/O 14
+  and 15, their A and B lines, are plain GPIO. With a probe input every
+  counter is the larger kind that latches its count on the probe, and six of
+  them do not fit the XC6SLX9: ISE 14.7 stopped in placement at 5,466 of
+  5,720 LUTs (95 %). Four fit (below).
 - The muxed encoder module reports version **0x84** (`MQCRevP`). The hostmot2
   driver creates `encoder.NN.probe-enable` and `probe-invert` only for that
   version.
@@ -31,11 +36,11 @@ marks, so it cannot be the probe. Channels 4 and 5 are both spare. **The
 probe is wired to both their index inputs**, so the line shows it in both
 phases, and the FPGA takes the line as the probe input.
 
-What it costs: channels 4 and 5 have no index input any more. They still
-count A and B, should they ever be needed. Their index is tied low --
-ISE says so as a warning, that the muxed index of pair 2 has no source and
-is connected to ground -- and the 7I74 keeps all eight smart-serial
-channels.
+What it costs: channels 4 and 5 are gone, index and count both -- they were
+spare, and their index line is the probe now. The driver must be asked for
+four encoders at most (`num_encoders=4` in the hostmot2 configuration; six is
+refused on this firmware), which works on the stock firmware as well. The
+7I74 keeps all eight smart-serial channels.
 
 The probe's level is still readable every cycle as `hm2_7i92.0.gpio.016.in`:
 hostmot2 gives every pin a GPIO input, whatever module owns it.
@@ -72,6 +77,13 @@ choice.
      `use work.PIN_7I77_7I74DP_34.all;`
 4. Use `7i92.ucf` as the constraints file. Generate the programming file
    (`toptethernet16hostmot2.bit`), and rename it `7i92_7i77_7i74DP.bit`.
+
+Built 2026-10-09 with ISE 14.7 WebPACK, headless (`xtclsh`, the project as
+above): 5,263 of 5,720 LUTs (92 %), 1,421 of 1,430 slices, 3,970 registers;
+every timing constraint met (timing score 0). The bitfile is 341,264 bytes,
+sha256 `e06e33ab905ecacc68d1e658ae86c42ed92d367c5a1959dd0a3940e46d53bc50`,
+its header naming the part `6slx9tqg144`. The design is full: anything added
+to it will not fit.
 
 Mesa (PCW on forum.linuxcnc.org) also builds a bitfile from a PIN file on
 request.

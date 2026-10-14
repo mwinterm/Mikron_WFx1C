@@ -1,9 +1,16 @@
-# 7i92_7i77_7i74DP: the 7I92's firmware with a probe input
+# 7i92t_7i77_7i74DP and 7i92_7i77_7i74DP: the WF41C's card with a probe input
 
-The WF41C's 7I92 runs Mesa's stock `7i92_7i77_7i74D` layout: a 7I77 on one
+The WF41C's Mesa card runs Mesa's stock `7i77_7i74D` layout: a 7I77 on one
 connector (six muxed encoders, the analog outputs, field I/O) and a 7I74 on
 the other (eight smart-serial channels). That firmware has no probe input,
 so a touch probe can only be read once per servo cycle.
+
+The card was a **7I92** (Xilinx Spartan-6 XC6SLX9) until it failed on
+2026-10-11; a **7I92TH** (Efinix Trion T20F256) replaced it on 2026-10-13.
+One PIN file serves both: built with ISE for the 7I92 as
+`7i92_7i77_7i74DP.bit`, with Efinity for the 7I92T as
+`7i92t_7i77_7i74DP.bin`, which the 7I92TH runs since 2026-10-14. hostmot2
+names a 7I92T a 7I92, so the HAL names are `hm2_7i92.0` on either.
 
 `PIN_7I77_7I74DP_34.vhd` gives it one. When the probe fires, the encoder
 module latches the count of every channel armed for it, in hardware, at the
@@ -21,7 +28,8 @@ The file is Mesa's `PIN_7I77_7I74D_34.vhd` with three changes:
   and 15, their A and B lines, are plain GPIO. With a probe input every
   counter is the larger kind that latches its count on the probe, and six of
   them do not fit the XC6SLX9: ISE 14.7 stopped in placement at 5,466 of
-  5,720 LUTs (95 %). Four fit (below).
+  5,720 LUTs (95 %). Four fit (below). The T20 is larger, and four fill 82 %
+  of its logic elements; six have not been tried on it.
 - The muxed encoder module reports version **0x84** (`MQCRevP`). The hostmot2
   driver creates `encoder.NN.probe-enable` and `probe-invert` only for that
   version.
@@ -54,15 +62,19 @@ check/check.sh <unpacked hostmot2 source directory>
 
 It reports the probe input on I/O 16 and only there, the index lines of
 channels 0-1 (I/O 10) and 2-3 (I/O 13), 3 smart-serial channels on port 0 and
-8 on port 1, and the muxed encoder's version, 132 (0x84).
+8 on port 1, and the muxed encoder's version, 132 (0x84) -- against the 7I92's
+sources and against the 7I92T's alike.
 
 ## Source
 
 Mesa's `7i92.zip` from mesanet.com (software/parallel/7i92.zip), downloaded
 2026-10-08, sha256 `7a603fec07b1f93a466d3050dcd6c1211b4569c5924c665460ecef39fa67b8d3`;
-its `configs/hostmot2/source/hostmot2.zip` is dated 2026-09-17. The PIN file
-keeps Mesa's header: it is licensed GPL-2.0-or-later or BSD-3-Clause, at your
-choice.
+its `configs/hostmot2/source/hostmot2.zip` is dated 2026-09-17. For the
+7I92T, Mesa's `7i92t.zip` (software/parallel/7i92t.zip), sha256
+`7641bd9db502044259699afedc1ebca24c7d19e38dc1d23afbac01c6239feed9`; its
+`configs/hostmot2/source/7i92t-hm2.zip`, the Efinity project with the
+sources, is dated 2026-09-17 too. The PIN file keeps Mesa's header: it is
+licensed GPL-2.0-or-later or BSD-3-Clause, at your choice.
 
 ## Build (Xilinx ISE 14.7 WebPACK, Spartan-6 XC6SLX9-TQ144-2)
 
@@ -88,18 +100,61 @@ to it will not fit.
 Mesa (PCW on forum.linuxcnc.org) also builds a bitfile from a PIN file on
 request.
 
+## Build (Efinix Efinity, Trion T20F256: the 7I92T and 7I92TH)
+
+`efinity/build-7i92t.sh` does it headless, the way Mesa's project is set up:
+it unpacks `7i92t-hm2.zip` from `7i92t.zip` (its sha256 checked), puts
+`PIN_7I77_7I74DP_34.vhd` beside the other PIN files and into
+`seveni92t.xml`, makes it the one PIN file `TopEthernet16HostMot2_efx.vhd`
+uses, sets the place-and-route seed to 2 (Mesa's note for
+`PIN_7I77_7I74D_34` on this card) and runs `efx_run.py seveni92t.xml --prj
+--flow compile`. Efinity is free but downloaded from Efinix's support
+center with an account, so it is not in the container: `efinity/Dockerfile`
+is Ubuntu 22.04 with the libraries Efinity loads, and the installation is
+mounted (the script's header has the commands).
+
+```sh
+MESA_ZIP=/path/to/7i92t.zip EFINITY=/path/to/efinity/2026.1 \
+  firmware/efinity/build-7i92t.sh      # or in the container, as its header says
+```
+
+Built 2026-10-14 with Efinity 2026.1.132 and its patch 5.14: 16,272 of
+19,728 logic elements (82 %), 78 of 204 memory blocks; timing met at the
+slow corner (C4, 85 °C), the 100 MHz `procclk` with 0.050 ns of setup and
+0.086 ns of hold slack, the design's one clock (`hm2fastclock` is
+unconnected in Mesa's top file). `outflow/seveni92t.hex.bin`, renamed
+`7i92t_7i77_7i74DP.bin`: 678,650 bytes, the same 256-byte text header and
+sync word as Mesa's own `7i92t_7i77_7i74d.bin`. The header names the build's
+date and directory, so its sha256 differs from build to build; the 678,394
+bytes after it are the bitstream mesaflash writes, and they were the same
+in two builds: sha256
+`42d84b7f75be0e28c72bb37e1181c61538e0f93f524a9db63bca4b1829fa7fae`
+(`tail -c +257 7i92t_7i77_7i74DP.bin | sha256sum`).
+
 ## Flash (control stopped)
 
 ```sh
-mesaflash --device 7i92 --addr 10.10.10.10 --readhmid       # what runs now
-mesaflash --device 7i92 --addr 10.10.10.10 --backup-flash   # keep it
-mesaflash --device 7i92 --addr 10.10.10.10 --write 7i92_7i77_7i74DP.bit
-mesaflash --device 7i92 --addr 10.10.10.10 --verify 7i92_7i77_7i74DP.bit
-mesaflash --device 7i92 --addr 10.10.10.10 --reload
-mesaflash --device 7i92 --addr 10.10.10.10 --readhmid       # MuxedQCount 0x84, IO16 probe
+D=7i92 F=7i92_7i77_7i74DP.bit           # the 7I92
+D=7i92t F=7i92t_7i77_7i74DP.bin         # the 7I92T or 7I92TH
+mesaflash --device $D --addr 10.10.10.10 --readhmid       # what runs now
+mesaflash --device $D --addr 10.10.10.10 --backup-flash   # keep it
+mesaflash --device $D --addr 10.10.10.10 --write $F
+mesaflash --device $D --addr 10.10.10.10 --verify $F
+mesaflash --device $D --addr 10.10.10.10 --reload
+mesaflash --device $D --addr 10.10.10.10 --readhmid       # MuxedQCount 0x84, IO16 probe
 ```
 
-The card keeps a fallback image, so a bad user image is recoverable.
+`--write` writes the user image, at 0x100000 on both cards; the fallback
+image at 0 is written only with `--fallback`, never here. The card keeps
+that fallback image, so a bad user image is recoverable. On the 7I92T
+mesaflash writes the bitstream after 78 bytes of padding and drops the text
+header.
+
+Written to the WF41C's 7I92TH on 2026-10-14, its flash backed up first:
+`--readhmid` reports four `MuxedQCount` at version 132, `Quad-ProbeM` on
+I/O 16 (P2-13), I/O 14 and 15 free, everything else as on the stock
+firmware. The high clock reads 175 MHz there, 180 MHz on Mesa's 2022 stock
+file; nothing in this layout runs on it.
 
 ## Wiring the probe and the tool setter
 
@@ -140,7 +195,7 @@ Setter 5 V out --------------------- NO o     1k
 ## The driver
 
 The hostmot2 driver clears `probe-enable` itself when the probe latches, though
-it declares the pin an input. `hm2-host` (driver-hostmot2, branch
-`feature/probe-enable`) publishes it both ways and applies it only when it
-changes, as it does `index-enable`. Without that it re-arms the latch every
-cycle and the core never sees it fire.
+it declares the pin an input. `hm2-host` (driver-hostmot2 v0.6.0 and later)
+publishes it both ways and applies it only when it changes, as it does
+`index-enable`. Without that it re-arms the latch every cycle and the core
+never sees it fire.
